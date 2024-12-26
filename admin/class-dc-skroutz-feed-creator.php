@@ -90,9 +90,9 @@ class Dicha_Skroutz_Feed_Creator {
 	/**
 	 * The main function that generates the XML feed.
 	 *
-	 * @return void
+	 * @return bool True if XML creation was successful. False otherwise.
 	 */
-	public function create_feed() {
+	public function create_feed(): bool {
 
 		$this->start_full_time = microtime( true );
 
@@ -114,6 +114,8 @@ class Dicha_Skroutz_Feed_Creator {
 
 		// write log data
 		$this->write_logs();
+
+		return empty( $this->xml_creation_errors );
 	}
 
 
@@ -342,12 +344,11 @@ class Dicha_Skroutz_Feed_Creator {
 	 */
 	public function create_feed_manual_mode() {
 
-		$this->create_feed();
-
-		$feed_generation_result = empty( $this->xml_creation_errors ) ? 1 : 0;
+		$feed_generation_result = $this->create_feed();
+		$result_param_value     = $feed_generation_result ? 1 : 0;
 
 		// enable this after testing
-		wp_redirect( admin_url( 'admin.php?page=' . DICHA_SKROUTZ_FEED_SLUG . '&feed_success=' . $feed_generation_result ) );
+		wp_redirect( admin_url( 'admin.php?page=' . DICHA_SKROUTZ_FEED_SLUG . '&feed_success=' . $result_param_value ) );
 		exit;
 	}
 

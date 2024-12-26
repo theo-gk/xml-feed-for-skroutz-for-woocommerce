@@ -10,10 +10,13 @@
  *
  * @wordpress-plugin
  * Plugin Name:       XML Feed for Skroutz & BestPrice for WooCommerce
+ * Plugin URI:        https://github.com/Digital-Challenge/xml-feed-for-skroutz-for-woocommerce
  * Description:       This plugin helps you create an XML feed for Skroutz and BestPrice marketplaces.
- * Version:           1.0.0
- * Author:            dichagr, theogk
+ * Author:            Digital Challenge
  * Author URI:        https://www.dicha.gr
+ * Version:           1.0.1
+ * Text Domain:       xml-feed-for-skroutz-for-woocommerce
+ * Domain Path:       /languages
  * Requires at least: 5.6
  * Tested up to:      6.7.1
  * WC requires at least: 6.2.0
@@ -22,8 +25,6 @@
  * Requires Plugins:  woocommerce
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       xml-feed-for-skroutz-for-woocommerce
- * Domain Path:       /languages
  */
 
 // If this file is called directly, abort.
@@ -34,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Plugin constants.
  */
-define( 'DICHA_SKROUTZ_FEED_VERSION', '1.0.0' );
+define( 'DICHA_SKROUTZ_FEED_VERSION', '1.0.1' );
 define( 'DICHA_SKROUTZ_FEED_SLUG', 'xml-feed-for-skroutz-for-woocommerce' );
 define( 'DICHA_SKROUTZ_FEED_FILE', __FILE__ );
 define( 'DICHA_SKROUTZ_FEED_BASE_FILE', DICHA_SKROUTZ_FEED_SLUG . '/' . DICHA_SKROUTZ_FEED_SLUG . '.php' );
