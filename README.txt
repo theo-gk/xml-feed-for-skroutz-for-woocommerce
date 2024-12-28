@@ -1,15 +1,12 @@
 === XML Feed for Skroutz & BestPrice for WooCommerce ===
-Author link: https://www.dicha.gr
-Author: dichagr, theogk
+Contributors: dichagr, theogk
 Tags: skroutz, bestprice, xml, feed, marketplace
+Stable tag: 1.0.1
 Requires at least: 5.6
 Tested up to: 6.7.1
 WC requires at least: 6.2.0
 WC tested up to: 9.5.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 This plugin helps you create an XML feed for Skroutz and BestPrice marketplaces.
 
@@ -40,6 +37,7 @@ This plugin will help you to easily pass the strict and challenging Skroutz XML 
 - Developer-friendly ways to customize **ALL** feed data fields, like ID, product title, SKU, availability, images, description, category, price, quantity, weight etc.
 - Schedule automatic XML generation using WP Cron or server cron jobs from Plesk/cPanel/SiteGround/GoDaddy or whatever platform you use.
 - ZIP format available for huge product feeds.
+- WP CLI support for generating the XML file.
 
 = Really Fast & Lightweight =
 - Optimized for speed, as it generates the XML way **faster** than any other "Skroutz feed" plugin, and also using far **less memory**, minimizing the stress on the server during the XML creation process.
@@ -65,20 +63,30 @@ This plugin will help you to easily pass the strict and challenging Skroutz XML 
 We use this plugin for years in our customers eshops with great results and 100% success rate in XML validation and approval from Skroutz and BestPrice.
 We just want to give something for free to the greek ecommerce community. If you insist on giving us money, you can buy some of our [premium plugins & addons](https://www.dicha.gr/plugins/).
 
+ = I use a similar plugin for generating the Skroutz/BestPrice XML, but I have problems. Can I switch easily to this plugin? =
+Yes, you can switch to this plugin, but please follow carefully the [migration guide](https://doc.clickup.com/2582906/p/h/2eubu-58615/d0b94a4b2c5331e/2eubu-58775) that corresponds to your previous plugin.
+If there is no guide available, please contact us to help you with the switch.
+
+ = Is the XML feed fully compliant with Skroutz.gr and BestPrice.gr specifications? =
+Yes, the plugin adheres to all requirements and specifications of Skroutz.gr and BestPrice.gr, and it can help you to easily pass the strict and challenging Skroutz XML validation process.
+
  = Does the plugin support product variations? =
 Yes, the plugin supports variations! Variations are grouped by size attributes. "Non-size" variations like color etc. appear in the feed as separate products, as per Skroutz requirements.
 
  = Can I exclude specific products or categories from the feed? =
 Absolutely. You can exclude or include products based on their categories and tags using the plugin settings. If you need more control, there is a developer-friendly way to include/exclude products programmatically.
+Please read the [documentation for developers](https://doc.clickup.com/2582906/p/h/2eubu-58615/d0b94a4b2c5331e/2eubu-58695) to find out how.
+
+ = Can I customize the product IDs in the XML feed? =
+Yes, you can use custom product IDs and SKUs which is particularly helpful if you are migrating from another e-commerce CMS, or an old WooCommerce installation.
+Please read the [documentation for developers](https://doc.clickup.com/2582906/p/h/2eubu-58615/d0b94a4b2c5331e/2eubu-58695) to find out how.
 
  = How often is the XML feed updated? =
 The plugin allows you to schedule automatic updates using the native WP Cron, or server cron jobs from Plesk/cPanel/SiteGround/GoDaddy or whatever platform you use. You can customize the update frequency to meet your needs.
 
- = Is the XML feed fully compliant with Skroutz.gr and BestPrice.gr specifications? =
-Yes, the plugin adheres to all requirements and specifications of Skroutz.gr and BestPrice.gr, and it can help you to easily pass the strict and challenging Skroutz XML validation process.
-
- = Can I customize the product IDs in the XML feed? =
-Yes, you can use custom product IDs and SKUs which is particularly helpful if you are migrating from another e-commerce CMS, or an old WooCommerce installation.
+ = Can I use WP CLI or a server script to generate the XML? =
+Yes, you can use the WP CLI or a server script to generate the XML.
+Please read the [documentation for developers](https://doc.clickup.com/2582906/p/h/2eubu-58615/d0b94a4b2c5331e/2eubu-58695) to find out how.
 
  = What are the system requirements for using this plugin? =
 The plugin requires WooCommerce 6.2.0 or later and WordPress 5.6 or later.
@@ -94,6 +102,10 @@ It is optimized to run on servers with low resources and the minimum PHP memory 
 
 == Changelog ==
 
-= 2.1.0 =
+= 1.0.1 =
+*Release Date - 26 Dec 2024*
+* Support for XML generation via WP-CLI.
+
+= 1.0.0 =
 *Release Date - 20 Dec 2024*
 * Initial public release.

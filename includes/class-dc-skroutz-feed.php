@@ -80,6 +80,11 @@ class Dicha_Skroutz_Feed {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-dc-skroutz-feed-admin.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-dc-skroutz-feed-creator.php';
 
+		/**
+		 * The class responsible for WP CLI commands.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-dc-skroutz-feed-cli.php';
+
 		$this->loader = new Dicha_Skroutz_Feed_Loader();
 	}
 
