@@ -563,7 +563,7 @@ class Dicha_Skroutz_Feed_Creator {
 				$variation_quantity = $this->data_helper->skroutz_get_quantity( $variation );
 
 				// Create an error if variation is out of stock
-				if ( $variation_quantity == 0 ) {
+				if ( ! is_wp_error( $variation_quantity ) && $variation_quantity == 0 ) {
 					$variation_quantity = new WP_Error( '10-1', 'Η κατάσταση αποθέματος της παραλλαγής είναι εξαντλημένη' );
 				}
 
