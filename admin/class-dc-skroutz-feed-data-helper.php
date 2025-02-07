@@ -53,7 +53,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return bool True to exclude.
 	 */
-	public function skroutz_exclude_variation_from_xml( $variation, $parent_product ): bool {
+	public function skroutz_exclude_variation_from_xml( $variation, WC_Product_Variable $parent_product ): bool {
 
 		if ( ! $variation instanceof WC_Product_Variation ) return true;
 
@@ -64,12 +64,12 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	/**
 	 * Getter for product name.
 	 *
-	 * @param $product WC_Product
+	 * @param $product   WC_Product
 	 * @param $name_base string|NULL
 	 *
 	 * @return string
 	 */
-	public function skroutz_get_name( $product, $name_base = NULL ): string {
+	public function skroutz_get_name( WC_Product $product, $name_base = NULL ): string {
 
 		// Find default name
 		$name_base = is_string( $name_base ) ? $name_base : $product->get_name();
@@ -145,12 +145,12 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string
 	 */
-	public function skroutz_get_url( $product, bool $remove_size_params = false ): string {
+	public function skroutz_get_url( WC_Product $product, bool $remove_size_params = false ): string {
 
 		$link = $product->get_permalink();
 
 		if ( $remove_size_params && ! empty( $this->options['size'] ) ) {
-			$size_params = array_map( function( $size_slug ) { return "attribute_{$size_slug}"; }, $this->options['size'] );
+			$size_params = array_map( function( $size_slug ) { return "attribute_$size_slug"; }, $this->options['size'] );
 			$link        = remove_query_arg( $size_params, $link );
 		}
 
@@ -165,7 +165,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string|WP_Error
 	 */
-	public function skroutz_get_main_image_url( $product ) {
+	public function skroutz_get_main_image_url( WC_Product $product ) {
 
 		$main_image = wp_get_attachment_url( $product->get_image_id() );
 		$main_image = apply_filters( 'dicha_skroutz_feed_custom_image', $main_image, $product, $this->feed_type );
@@ -185,7 +185,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return array
 	 */
-	public function skroutz_get_additional_images( $product ): array {
+	public function skroutz_get_additional_images( WC_Product $product ): array {
 
 		$additional_images = [];
 		$gallery_images    = $product->get_gallery_image_ids();
@@ -207,7 +207,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string|WP_Error
 	 */
-	public function skroutz_get_category( $product ) {
+	public function skroutz_get_category( WC_Product $product ) {
 
 		/*
 		 * Filter to short-circuit product category.
@@ -261,7 +261,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 
 		if ( ! empty( $categories_trees ) ) {
 
-			foreach ( $categories_trees as $cat_id => $cat_tree ) {
+			foreach ( $categories_trees as $cat_tree ) {
 
 				$cur_depth = count( explode( $separator, $cat_tree ) );
 
@@ -287,7 +287,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string
 	 */
-	public function skroutz_get_description( $product ): string {
+	public function skroutz_get_description( WC_Product $product ): string {
 
 		$description = $this->options['description'] === 'short' ? $product->get_short_description() : $product->get_description();
 		$description = apply_filters( 'dicha_skroutz_feed_custom_description', $description, $product, $this->options['description'], $this->feed_type );
@@ -303,7 +303,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string
 	 */
-	public function skroutz_get_ean( $product ): string {
+	public function skroutz_get_ean( WC_Product $product ): string {
 
 		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field' );
 
@@ -326,7 +326,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string
 	 */
-	public function skroutz_get_mpn( $product, $context = 'view' ): string {
+	public function skroutz_get_mpn( WC_Product $product, string $context = 'view' ): string {
 
 		$mpn = $product->get_sku( $context );
 
@@ -341,7 +341,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string|WP_Error
 	 */
-	public function skroutz_get_price( $product ) {
+	public function skroutz_get_price( WC_Product $product ) {
 
 		$price_incl_tax = wc_get_price_including_tax( $product );
 
@@ -362,7 +362,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return float|string
 	 */
-	public function skroutz_get_vat( $product ) {
+	public function skroutz_get_vat( WC_Product $product ) {
 
 		$vat = $this->default_vat;
 
@@ -391,8 +391,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string
 	 */
-	public function skroutz_get_manufacturer( $product ): string {
-		// todo add support for native Woo Brands
+	public function skroutz_get_manufacturer( WC_Product $product ): string {
 
 		$manufacturer = 'OEM';
 
@@ -400,8 +399,16 @@ class Dicha_Skroutz_Feed_Data_Helper {
 
 		foreach ( $this->options['manufacturer'] as $manufacturer_attribute ) {
 
-			$manufacturer_name = $product->get_attribute( $manufacturer_attribute );
+			if ( 'pa_woo__product_brand' === $manufacturer_attribute ) {
+				// Support for native WooCommerce Brands taxonomy
+				$manufacturer_name = $this->get_wc_brands_native( $product );
+			}
+			else {
+				// Get regular attribute value
+				$manufacturer_name = $product->get_attribute( $manufacturer_attribute );
+			}
 
+			// keep only the value from the first non-empty attribute/custom taxonomy
 			if ( ! empty( $manufacturer_name ) ) {
 				$manufacturer = $manufacturer_name;
 				break;
@@ -413,13 +420,32 @@ class Dicha_Skroutz_Feed_Data_Helper {
 
 
 	/**
+	 * Retrieves the native WooCommerce product brands associated with a given product.
+	 *
+	 * @param WC_Product $product
+	 *
+	 * @return string A comma-separated string of product brand names or an empty string if no brands are found or an error occurs.
+	 */
+	private function get_wc_brands_native( WC_Product $product ): string {
+
+		$wc_brands = get_the_terms( $product->get_id(), 'product_brand' );
+
+		if ( empty( $wc_brands ) || is_wp_error( $wc_brands ) ) {
+			return '';
+		}
+
+		return implode( ', ', wp_list_pluck( $wc_brands, 'name' ) );
+	}
+
+
+	/**
 	 * Getter for product weight.
 	 *
 	 * @param $product WC_Product
 	 *
 	 * @return float|int|string
 	 */
-	public function skroutz_get_weight( $product ) {
+	public function skroutz_get_weight( WC_Product $product ) {
 
 		$weight = wc_get_weight( $product->get_weight(), $this->weight_unit_for_export );
 		$weight = apply_filters( 'dicha_skroutz_feed_custom_weight', $weight, $product, $this->weight_unit_for_export, $this->feed_type );
@@ -437,7 +463,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return float|int|string
 	 */
-	public function skroutz_get_shipping( $product ) {
+	public function skroutz_get_shipping( WC_Product $product ) {
 
 		$shipping = '';
 
@@ -462,7 +488,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return int|WP_Error
 	 */
-	public function skroutz_get_quantity( $product ) {
+	public function skroutz_get_quantity( WC_Product $product ) {
 
 		$product_type = $product->get_type();
 
@@ -502,7 +528,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string
 	 */
-	public function skroutz_get_color( $product ): string {
+	public function skroutz_get_color( WC_Product $product ): string {
 
 		$color = '';
 
@@ -564,7 +590,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string
 	 */
-	public function skroutz_get_size( $product ): string {
+	public function skroutz_get_size( WC_Product $product ): string {
 
 		$size = '';
 
@@ -626,7 +652,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string|WP_Error
 	 */
-	public function skroutz_get_availability( $product ) {
+	public function skroutz_get_availability( WC_Product $product ) {
 
 		$availability_value = $product->get_meta( $this->availability_meta_key );
 
@@ -663,7 +689,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	public function skroutz_get_availability_text( string $availability_value ) {
 
 		$availability_options = Dicha_Skroutz_Feed_Admin::skroutz_get_availability_options();
-		$availability_text    = isset( $availability_options[ $availability_value ] ) ? $availability_options[ $availability_value ] : '';
+		$availability_text    = $availability_options[ $availability_value ] ?? '';
 
 		if ( empty( $availability_text ) ) {
 			return new WP_Error( '20', 'Μη έγκυρη τιμή διαθεσιμότητας' );
