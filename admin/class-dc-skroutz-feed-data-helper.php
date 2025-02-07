@@ -305,7 +305,14 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 */
 	public function skroutz_get_ean( $product ): string {
 
-		$ean = $product->get_meta( 'dicha_skroutz_feed_ean_barcode' );
+		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field' );
+
+		if ( wc_string_to_bool( $dicha_skroutz_feed_enable_ean_field ) ) {
+			$ean = $product->get_meta( 'dicha_skroutz_feed_ean_barcode' );
+		}
+		else {
+			$ean = $product->get_meta( '_global_unique_id' );
+		}
 
 		return apply_filters( 'dicha_skroutz_feed_custom_ean', $ean, $product, $this->feed_type );
 	}
@@ -385,6 +392,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 * @return string
 	 */
 	public function skroutz_get_manufacturer( $product ): string {
+		// todo add support for native Woo Brands
 
 		$manufacturer = 'OEM';
 

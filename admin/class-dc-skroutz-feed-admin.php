@@ -29,6 +29,13 @@ class Dicha_Skroutz_Feed_Admin {
 	 */
 	private $attributes_list;
 
+	/**
+	 * The version of WooCommerce.
+	 *
+	 * @var string $woo_version The installed version of WooCommerce plugin.
+	 */
+	private string $woo_version;
+
 
 	/**
 	 * Initialize the class and set its properties.
@@ -40,6 +47,7 @@ class Dicha_Skroutz_Feed_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version     = $version;
+		$this->woo_version = defined( 'WC_VERSION' ) ? WC_VERSION : '6.2.0';
 	}
 
 
@@ -778,11 +786,15 @@ class Dicha_Skroutz_Feed_Admin {
 	 */
 	function dicha_skroutz_feed_enable_ean_field_callback() {
 
-		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', 'yes' );
+		$default_ean_enabled = version_compare( $this->woo_version, '9.2', '>=' ) ? 'no' : 'yes';
+		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', $default_ean_enabled );
 		?>
 		<label for="dicha_skroutz_feed_enable_ean_field">
 			<input type="checkbox" id="dicha_skroutz_feed_enable_ean_field" name="dicha_skroutz_feed_enable_ean_field" value="yes"<?php checked( 'yes', $dicha_skroutz_feed_enable_ean_field ); ?>>
 			<?php esc_html_e( 'Add new field for inserting the EAN/Barcode info. The field will appear under WooCommerce SKU field.', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
+			<?php if ( ! wc_string_to_bool( $dicha_skroutz_feed_enable_ean_field ) && version_compare( $this->woo_version, '9.2', '>=' ) ) : ?>
+				<br><?php esc_html_e( 'We suggest keeping this unchecked. Use the new native WooCommerce field called "GTIN, UPC, EAN, or ISBN" which is located under the "SKU" field.', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
+			<?php endif; ?>
 		</label>
 		<?php
 	}
@@ -1158,7 +1170,8 @@ class Dicha_Skroutz_Feed_Admin {
 	 */
 	function add_ean_field_under_sku() {
 
-		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', 'yes' );
+		$default_ean_enabled = version_compare( $this->woo_version, '9.2', '>=' ) ? 'no' : 'yes';
+		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', $default_ean_enabled );
 
 		if ( ! wc_string_to_bool( $dicha_skroutz_feed_enable_ean_field ) ) return;
 
@@ -1185,7 +1198,8 @@ class Dicha_Skroutz_Feed_Admin {
 		}
 
 		// Save EAN field only if enabled from global settings
-		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', 'yes' );
+		$default_ean_enabled = version_compare( $this->woo_version, '9.2', '>=' ) ? 'no' : 'yes';
+		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', $default_ean_enabled );
 
 		if ( wc_string_to_bool( $dicha_skroutz_feed_enable_ean_field ) ) {
 
@@ -1219,7 +1233,8 @@ class Dicha_Skroutz_Feed_Admin {
 	 */
 	function print_variation_custom_fields( $loop, $variation_data, $variation ) {
 
-		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', 'yes' );
+		$default_ean_enabled = version_compare( $this->woo_version, '9.2', '>=' ) ? 'no' : 'yes';
+		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', $default_ean_enabled );
 
 		if ( wc_string_to_bool( $dicha_skroutz_feed_enable_ean_field ) ) {
 
@@ -1265,7 +1280,8 @@ class Dicha_Skroutz_Feed_Admin {
 		}
 
 		// Save EAN field only if enabled from global settings
-		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', 'yes' );
+		$default_ean_enabled = version_compare( $this->woo_version, '9.2', '>=' ) ? 'no' : 'yes';
+		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', $default_ean_enabled );
 
 		if ( wc_string_to_bool( $dicha_skroutz_feed_enable_ean_field ) ) {
 
