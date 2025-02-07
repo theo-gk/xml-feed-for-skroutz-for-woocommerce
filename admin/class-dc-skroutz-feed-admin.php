@@ -691,7 +691,7 @@ class Dicha_Skroutz_Feed_Admin {
 		?>
 		<!--suppress HtmlFormInputWithoutLabel -->
 		<select id="dicha_skroutz_feed_color" name="dicha_skroutz_feed_color[]" class="select-woo-input" multiple="multiple">
-			<optgroup label="<?php esc_html_e( 'Select attributes:', 'xml-feed-for-skroutz-for-woocommerce' ); ?>">
+			<optgroup label="<?php esc_html_e( 'Available product attributes:', 'xml-feed-for-skroutz-for-woocommerce' ); ?>">
 				<?php foreach ( $options['attribute_taxonomies'] as $attr_slug => $attr_name ) : ?>
 					<option value="<?php echo esc_attr( $attr_slug ); ?>"<?php selected( in_array( $attr_slug, $selected_values ) ); ?>>
 						<?php echo esc_html( $attr_name ); ?>
@@ -713,7 +713,7 @@ class Dicha_Skroutz_Feed_Admin {
 		?>
 		<!--suppress HtmlFormInputWithoutLabel -->
 		<select id="dicha_skroutz_feed_size" name="dicha_skroutz_feed_size[]" class="select-woo-input" multiple="multiple">
-			<optgroup label="<?php esc_html_e( 'Select attributes:', 'xml-feed-for-skroutz-for-woocommerce' ); ?>">
+			<optgroup label="<?php esc_html_e( 'Available product attributes:', 'xml-feed-for-skroutz-for-woocommerce' ); ?>">
 				<?php foreach ( $options['attribute_taxonomies'] as $attr_slug => $attr_name ) : ?>
 					<option value="<?php echo esc_attr( $attr_slug ); ?>"<?php selected( in_array( $attr_slug, $selected_values ) ); ?>>
 						<?php echo esc_html( $attr_name ); ?>
@@ -768,13 +768,22 @@ class Dicha_Skroutz_Feed_Admin {
 	 */
 	function dicha_skroutz_feed_title_attributes_callback(): void {
 
-		$options         = $this->prepare_attributes_list();
-		$selected_values = get_option( 'dicha_skroutz_feed_title_attributes', [] );
+		$selected_values         = get_option( 'dicha_skroutz_feed_title_attributes', [] );
+		$options                 = $this->prepare_attributes_list();
+		$custom_taxonomy_options = [];
+
+		if ( ! empty( $options['custom_taxonomies'] ) ) {
+			if ( isset( $options['custom_taxonomies']['product_brand'] ) ) {
+				$custom_taxonomy_options['woo__product_brand'] = __( 'WooCommerce Brands', 'xml-feed-for-skroutz-for-woocommerce' );
+			}
+			// maybe add support for other custom taxonomies here...
+		}
+
 		?>
 		<!--suppress HtmlFormInputWithoutLabel -->
 		<select id="dicha_skroutz_feed_title_attributes" name="dicha_skroutz_feed_title_attributes[]"
 		        class="select-woo-input" multiple="multiple">
-			<optgroup label="<?php esc_html_e( 'Select attributes:', 'xml-feed-for-skroutz-for-woocommerce' ); ?>">
+			<optgroup label="<?php esc_html_e( 'Available product attributes:', 'xml-feed-for-skroutz-for-woocommerce' ); ?>">
 				<?php foreach ( $options['attribute_taxonomies'] as $attr_slug => $attr_name ) : ?>
 					<option
 						value="<?php echo esc_attr( $attr_slug ); ?>"<?php selected( in_array( $attr_slug, $selected_values ) ); ?>>
@@ -782,6 +791,15 @@ class Dicha_Skroutz_Feed_Admin {
 					</option>
 				<?php endforeach; ?>
 			</optgroup>
+			<?php if ( ! empty( $custom_taxonomy_options ) ) : ?>
+				<optgroup label="<?php esc_html_e( 'Other taxonomies:', 'xml-feed-for-skroutz-for-woocommerce' ); ?>">
+					<?php foreach ( $custom_taxonomy_options as $tax_slug => $tax_name ) : ?>
+						<option value="<?php echo esc_attr( $tax_slug ); ?>"<?php selected( in_array( $tax_slug, $selected_values ) ); ?>>
+							<?php echo esc_html( $tax_name ); ?>
+						</option>
+					<?php endforeach; ?>
+				</optgroup>
+			<?php endif; ?>
 		</select>
 		<p class="desc">
 			<?php echo wp_kses_post( __( 'These attributes will be added to XML product name (if not included already).', 'xml-feed-for-skroutz-for-woocommerce' ) ); ?>

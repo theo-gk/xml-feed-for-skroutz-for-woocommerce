@@ -69,7 +69,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @return string
 	 */
-	public function skroutz_get_name( WC_Product $product, $name_base = NULL ): string {
+	public function skroutz_get_name( WC_Product $product, ?string $name_base = NULL ): string {
 
 		// Find default name
 		$name_base = is_string( $name_base ) ? $name_base : $product->get_name();
@@ -89,23 +89,30 @@ class Dicha_Skroutz_Feed_Data_Helper {
 		}
 
 
-		// Find attributes names to add to product name
-		$att_names_to_append   = [];
-		$attributes            = $product->get_attributes();
-		$allowed_atts_in_title = array_filter( array_map('sanitize_title', $this->options['title_attributes'] ) ); // checked ok with greek slugs
+		// Find attributes or custom taxonomies to add to product name
+		$term_names_to_append        = [];
+		$allowed_taxonomies_in_title = array_filter( array_map( 'sanitize_title', $this->options['title_attributes'] ) ); // checked ok with greek slugs
+		$attributes                  = $product->get_attributes();
 
-		// Get allowed attributes that are not used for variations (Variation attributes are included in $name_base already)
-		if ( ! empty( $allowed_atts_in_title ) ) {
+		if ( ! empty( $allowed_taxonomies_in_title ) ) {
 
+			// Get allowed attributes that are not used for variations (Variation attributes are included in $name_base already)
 			$attributes_to_add = array_filter(
 				$attributes,
-				function( $val, $key ) use( $allowed_atts_in_title ) {
-					return in_array( $key, $allowed_atts_in_title ) && ! $val->get_variation();
+				function( $val, $key ) use( $allowed_taxonomies_in_title ) {
+					return in_array( $key, $allowed_taxonomies_in_title ) && ! $val->get_variation();
 				}, ARRAY_FILTER_USE_BOTH );
+
+			// transform WC_Product_Attribute objects to WP_Term objects
+			$terms_to_add = array_map( function( $wc_attribute ) { return $wc_attribute->get_terms(); }, $attributes_to_add );
+
+			// Add support for native WooCommerce Brands
+			if ( in_array( 'pa_woo__product_brand', $allowed_taxonomies_in_title ) ) {
+				$terms_to_add = array_merge( $terms_to_add, [ 'woo__product_brand' => $this->get_wc_brands_native( $product ) ] );
+			}
 		}
 
-
-		if ( ! empty( $attributes_to_add ) ) {
+		if ( ! empty( $terms_to_add ) ) {
 
 			// Split name to meaningful words to detect attribute names.
 			// Better than comparing whole string with strpos,
@@ -113,27 +120,25 @@ class Dicha_Skroutz_Feed_Data_Helper {
 			// Search with strpos only when attribute name has more than one word.
 			$name_base_parts = preg_split( '/[\s,()]+/', $name_base, -1, PREG_SPLIT_NO_EMPTY );
 
-			foreach ( $attributes_to_add as $attribute ) {
+			foreach ( $terms_to_add as $term_objects ) {
 
-				foreach ( $attribute->get_terms() as $term ) {
+				foreach ( $term_objects as $term ) {
 
 					if ( count( explode( ' ', $term->name ) ) > 1 ) { // for multi-word names -> direct search in title
 						if ( strpos( $name_base, $term->name ) === false ) {
-							$att_names_to_append[] = $term->name;
+							$term_names_to_append[] = $term->name;
 						}
 					}
 					elseif ( ! in_array( $term->name, $name_base_parts ) ) {
-						$att_names_to_append[] = $term->name;
+						$term_names_to_append[] = $term->name;
 					}
 				}
 			}
 		}
 
-		$atts_string_to_add = implode( ' ', $att_names_to_append );
+		$product_name = ! empty( $term_names_to_append ) ? $name_base . ' ' . implode( ' ', $term_names_to_append ) : $name_base;
 
-		$product_name = ! empty( $atts_string_to_add ) ? $name_base . ' ' . $atts_string_to_add : $name_base;
-
-		return apply_filters( 'dicha_skroutz_feed_custom_product_name', $product_name, $product, $name_base, $allowed_atts_in_title, $this->feed_type );
+		return apply_filters( 'dicha_skroutz_feed_custom_product_name', $product_name, $product, $name_base, $allowed_taxonomies_in_title, $this->feed_type );
 	}
 
 
@@ -401,7 +406,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 
 			if ( 'pa_woo__product_brand' === $manufacturer_attribute ) {
 				// Support for native WooCommerce Brands taxonomy
-				$manufacturer_name = $this->get_wc_brands_native( $product );
+				$manufacturer_name = implode( ', ', wp_list_pluck( $this->get_wc_brands_native( $product ), 'name' ) );
 			}
 			else {
 				// Get regular attribute value
@@ -424,17 +429,17 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @param WC_Product $product
 	 *
-	 * @return string A comma-separated string of product brand names or an empty string if no brands are found or an error occurs.
+	 * @return array A WP_Term[] array with product brand term objects or an empty array if no brands are found or an error occurs.
 	 */
-	private function get_wc_brands_native( WC_Product $product ): string {
+	private function get_wc_brands_native( WC_Product $product ): array {
 
 		$wc_brands = get_the_terms( $product->get_id(), 'product_brand' );
 
 		if ( empty( $wc_brands ) || is_wp_error( $wc_brands ) ) {
-			return '';
+			return [];
 		}
 
-		return implode( ', ', wp_list_pluck( $wc_brands, 'name' ) );
+		return $wc_brands;
 	}
 
 

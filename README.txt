@@ -1,7 +1,7 @@
 === XML Feed for Skroutz & BestPrice for WooCommerce ===
 Contributors: dichagr, theogk
 Tags: skroutz, bestprice, xml, feed, marketplace
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 Requires at least: 5.6
 Tested up to: 6.7.2
 WC requires at least: 6.2.0
@@ -104,7 +104,7 @@ It is optimized to run on servers with low resources and the minimum PHP memory 
 
 == Changelog ==
 
-= 1.0.2 =
+= 1.0.3 =
 *Release Date - 07 Feb 2025*
 * Feature: Add support for native WooCommerce Brands (added recently in WooCommerce core v9.6.0).
 * Feature: Add missing support for native Woo EAN/Barcode field.
