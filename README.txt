@@ -1,11 +1,11 @@
 === XML Feed for Skroutz & BestPrice for WooCommerce ===
 Contributors: dichagr, theogk
 Tags: skroutz, bestprice, xml, feed, marketplace
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 Requires at least: 5.6
 Tested up to: 6.7.2
 WC requires at least: 6.2.0
-WC tested up to: 9.6.1
+WC tested up to: 9.7.0
 Requires PHP: 7.4
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -103,6 +103,10 @@ It is optimized to run on servers with low resources and the minimum PHP memory 
 4. Setup the plugin settings navigating through the left main menu: Digital Challenge > Skroutz/BestPrice XML
 
 == Changelog ==
+= 1.0.4 =
+*Release Date - 25 Feb 2025*
+* Compatibility: Checked with the latest WordPress and WooCommerce versions.
+* Fix: Fix a bug in quick edit field with missing selected option.
 
 = 1.0.3 =
 *Release Date - 07 Feb 2025*
