@@ -124,7 +124,7 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return void
 	 */
-	private function build_product_export_data() {
+	private function build_product_export_data(): void {
 
 		$skroutz_products = $this->collect_products_for_export();
 		// var_dump( $skroutz_products );
@@ -307,8 +307,9 @@ class Dicha_Skroutz_Feed_Creator {
 				else {
 					// a list of used skus, to prevent "duplicate sku" errors when variations have no own sku, only on parent level
 					$groups_skus_list = [];
+					$groups_count    = count( $variations_groups );
 
-					foreach ( $variations_groups as $unique_key => $variations_group ) {
+					foreach ( $variations_groups as $variations_group ) {
 
 						// gather variable (parent) product data
 						$node_data = array_merge(
@@ -317,14 +318,14 @@ class Dicha_Skroutz_Feed_Creator {
 								'name' => $variations_group['group_name']
 							],
 							$parent_level_data,
-							$this->get_variations_group_data( $product, $variations_group['group_variations'], $has_size_variations, $groups_skus_list ),
+							$this->get_variations_group_data( $product, $variations_group['group_variations'], $has_size_variations, $groups_skus_list, $groups_count ),
 						);
 
 						// check if errors exist
 						$data_contain_no_errors = $this->detect_data_errors( $node_data );
 
 						if ( $data_contain_no_errors ) {
-							$this->products_for_export[ $unique_key ] = $node_data;
+							$this->products_for_export[ $variations_group['unique_id'] ] = $node_data;
 						}
 					}
 				}
@@ -358,7 +359,7 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return void
 	 */
-	private function init_options() {
+	private function init_options(): void {
 
 		$options = [
 			'manufacturer'       => $this->prefix_attributes( get_option( 'dicha_skroutz_feed_manufacturer', [] ) ),
@@ -385,7 +386,7 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return void
 	 */
-	private function init_data_helper() {
+	private function init_data_helper(): void {
 
 		require_once( 'class-dc-skroutz-feed-data-helper.php' );
 
@@ -495,14 +496,15 @@ class Dicha_Skroutz_Feed_Creator {
 	/**
 	 * Builds node data for variable products (Variation groups data).
 	 *
-	 * @param $parent_product      WC_Product_Variable The parent product
-	 * @param $group_variations    WC_Product_Variation[] An array with this group's variations
-	 * @param $has_size_variations bool True if parent product has "size" variation attributes
-	 * @param $groups_skus_list    array A list with unique group SKUs
+	 * @param WC_Product_Variable    $parent_product      The parent product
+	 * @param WC_Product_Variation[] $group_variations    An array with this group's variations
+	 * @param bool                   $has_size_variations True if parent product has "size" variation attributes
+	 * @param array                  $groups_skus_list    A list with unique group SKUs
+	 * @param int                    $groups_count        The total number of variation groups
 	 *
 	 * @return array
 	 */
-	private function get_variations_group_data( WC_Product_Variable $parent_product, array $group_variations, bool $has_size_variations, array &$groups_skus_list ): array {
+	private function get_variations_group_data( WC_Product_Variable $parent_product, array $group_variations, bool $has_size_variations, array &$groups_skus_list, int $groups_count ): array {
 
 		// Protect against product data error - All groups with no size vars, should have exactly 1 group variation
 		// Usually with variations not showing in product page because their variations attributes were removed
@@ -526,6 +528,12 @@ class Dicha_Skroutz_Feed_Creator {
 
 		// parent main product image
 		$parent_main_image = $this->data_helper->skroutz_get_main_image_url( $parent_product );
+
+		// if parent product has only one group (usually just size variations, without non-size attrs), then keep parent mpn for whole group
+		// if multiple groups exist, leave empty so that later gets filled with a variation's sku (avoid duplicate sku in different groups)
+		if ( $groups_count === 1 ) {
+			$group_sku = $this->data_helper->skroutz_get_mpn( $parent_product );
+		}
 
 		foreach ( $group_variations as $variation ) {
 
@@ -862,7 +870,7 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return void
 	 */
-	private function write_logs() {
+	private function write_logs(): void {
 
 		$log_level = get_option( 'dicha_skroutz_feed_log_level', 'minimal' );
 
@@ -909,7 +917,7 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return void
 	 */
-	private function maybe_flush_runtime_cache() {
+	private function maybe_flush_runtime_cache(): void {
 
 		// 80% if under 500MB, 75% if over 500MB
 		$limit_ram_usage_percent = $this->memory_limit < 524288000 ? 0.8 : 0.75;
@@ -929,7 +937,7 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return void
 	 */
-	private function flush_runtime_cache() {
+	private function flush_runtime_cache(): void {
 
 		/*
 		 * Calling wp_cache_flush_runtime() lets us clear the runtime cache without invalidating the external object
@@ -950,8 +958,9 @@ class Dicha_Skroutz_Feed_Creator {
 	 * Find the max memory limit for this PHP script.
 	 *
 	 * @return void
+	 * @noinspection PhpMissingBreakStatementInspection
 	 */
-	private function find_max_memory_limit() {
+	private function find_max_memory_limit(): void {
 
 		$memory_limit = ini_get( 'memory_limit' );
 
@@ -979,7 +988,7 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return void
 	 */
-	private function setup_wc_attributes_list() {
+	private function setup_wc_attributes_list(): void {
 
 		global $wc_product_attributes;
 
@@ -1045,22 +1054,22 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return void
 	 */
-	private function saveXML() {
+	private function saveXML(): void {
 
 		require_once( 'mod_simplexml.php' );
 
 		echo "#========================================================================#\n";
 		echo "-> Saving Products XML...\n";
 
-		$dt = new DateTime( "now", new DateTimeZone( 'Europe/Athens' ) );
+		$data_for_export = [];
 
-		$data_for_export = [
-			'created_at' => $dt->format( 'Y-m-d H:i:s' ),
-			'products'   => $this->products_for_export
-		];
+		try {
+			$dt = new DateTime( "now", new DateTimeZone( 'Europe/Athens' ) );
+			$data_for_export['created_at'] = $dt->format( 'Y-m-d H:i:s' );
+		}
+		catch ( Exception $e ) {}
 
-		// echo '<br><br><br><br><br>Export(' . count( $this->products_for_export ) . ' product nodes):<br><br>';
-		// var_dump($data_for_export);
+		$data_for_export['products'] = $this->products_for_export;
 
 		$this->decide_nodes_for_cdata();
 
@@ -1124,8 +1133,11 @@ class Dicha_Skroutz_Feed_Creator {
 		echo "-> Saving: DONE!\n";
 		echo "#========================================================================#\n";
 
-		$dt = new DateTime( "now", new DateTimeZone( 'Europe/Athens' ) );
-		update_option( 'dicha_skroutz_feed_last_run', $dt->format( 'd/m/Y H:i:s' ), false );
+		try {
+			$dt = new DateTime( "now", new DateTimeZone( 'Europe/Athens' ) );
+			update_option( 'dicha_skroutz_feed_last_run', $dt->format( 'd/m/Y H:i:s' ), false );
+		}
+		catch ( Exception $e ) {}
 	}
 
 
@@ -1146,7 +1158,7 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return void
 	 */
-	private function xmlProcess( array $data, &$xml_data, string $parent_node = 'root' ) {
+	private function xmlProcess( array $data, &$xml_data, string $parent_node = 'root' ): void {
 
 		foreach ( $data as $key => $value ) {
 
@@ -1203,7 +1215,7 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return void
 	 */
-	private function decide_nodes_for_cdata() {
+	private function decide_nodes_for_cdata(): void {
 
 		$this->fields_in_cdata = apply_filters( 'dicha_skroutz_feed_fields_in_cdata', [
 			'name',
