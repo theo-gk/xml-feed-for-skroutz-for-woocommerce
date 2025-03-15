@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: XML Feed for Skroutz for WooCommerce\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-07 15:03+0000\n"
+"POT-Creation-Date: 2025-03-15 19:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -17,14 +17,14 @@ msgstr ""
 "X-Domain: xml-feed-for-skroutz-for-woocommerce"
 
 #. 1: A select input for cron schedule. 2: the CSS class for schedule description. 3: CSS styles. 4: Number representing the minute
-#: admin/class-dc-skroutz-feed-admin.php:539
+#: admin/class-dc-skroutz-feed-admin.php:611
 #, php-format
 msgid ""
 "%1$s<span class=\"%2$s\" style=\"%3$s\">, starting at 00:XX, where XX is the "
 "%4$s minute.</span>"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:552
+#: admin/class-dc-skroutz-feed-admin.php:624
 msgid ""
 "<strong>Fill the \"minute\" field with a number between 0-59.</strong> If "
 "you insert the value \"45\", then the import will start running at 00:45 at "
@@ -33,72 +33,77 @@ msgid ""
 "XML."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:844
+#: admin/class-dc-skroutz-feed-admin.php:916
 msgid ""
 "Add new field for inserting the EAN/Barcode info. The field will appear "
 "under WooCommerce SKU field."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:211
+#: admin/class-dc-skroutz-feed-admin.php:1393
+#, php-format
+msgid "Alert about Skroutz XML generation at %1$s (%2$s)"
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:218
 msgid "Attributes in Product name"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1092
+#: admin/class-dc-skroutz-feed-admin.php:1200
 msgid "Available"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1093
+#: admin/class-dc-skroutz-feed-admin.php:1201
 msgid "Available from 1 to 3 days"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1094
+#: admin/class-dc-skroutz-feed-admin.php:1202
 msgid "Available from 4 to 10 days"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:663
-#: admin/class-dc-skroutz-feed-admin.php:694
-#: admin/class-dc-skroutz-feed-admin.php:716
-#: admin/class-dc-skroutz-feed-admin.php:786
+#: admin/class-dc-skroutz-feed-admin.php:735
+#: admin/class-dc-skroutz-feed-admin.php:766
+#: admin/class-dc-skroutz-feed-admin.php:788
+#: admin/class-dc-skroutz-feed-admin.php:858
 msgid "Available product attributes:"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1095
+#: admin/class-dc-skroutz-feed-admin.php:1203
 msgid "Available up to 30 days"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:951
+#: admin/class-dc-skroutz-feed-admin.php:1023
 msgid "Basic logging"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:968
+#: admin/class-dc-skroutz-feed-admin.php:1040
 msgid "Basic logging only shows info about feed generation."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:451
+#: admin/class-dc-skroutz-feed-admin.php:515
 msgid "Changes have been saved."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:187
+#: admin/class-dc-skroutz-feed-admin.php:194
 msgid "Color"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:353
+#: admin/class-dc-skroutz-feed-admin.php:372
 msgid "Create XML feed"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:199
+#: admin/class-dc-skroutz-feed-admin.php:206
 msgid "Default Availability"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1100
+#: admin/class-dc-skroutz-feed-admin.php:1208
 msgid "Default availability"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:828
+#: admin/class-dc-skroutz-feed-admin.php:900
 msgid "Description"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:217
+#: admin/class-dc-skroutz-feed-admin.php:224
 msgid "Description to display"
 msgstr ""
 
@@ -106,72 +111,94 @@ msgstr ""
 msgid "Digital Challenge"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:493
+#: admin/class-dc-skroutz-feed-admin.php:557
 msgid ""
 "Do NOT use the same attribute in multiple fields, for example in both Color "
 "and Size."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1241
-#: admin/class-dc-skroutz-feed-admin.php:1305
+#: admin/class-dc-skroutz-feed-admin.php:384
+msgid "Documentation for Developers"
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:1489
+#: admin/class-dc-skroutz-feed-admin.php:1553
 msgid "EAN/Barcode"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:223
+#: admin/class-dc-skroutz-feed-admin.php:230
 msgid "EAN/Barcode field"
 msgstr ""
 
+#: admin/class-dc-skroutz-feed-admin.php:284
+msgid "Email Address to Notify"
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:1058
+msgid ""
+"Enable a monitor to alert you if the XML generation fails. An email will be "
+"sent to the email address below."
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:278
+msgid "Enable Generation Monitor"
+msgstr ""
+
 #. %d: A number representing the hour interval.
-#: admin/class-dc-skroutz-feed-admin.php:611
+#: admin/class-dc-skroutz-feed-admin.php:683
 msgid "Every %d hour"
 msgid_plural "Every %d hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/class-dc-skroutz-feed-admin.php:637
+#: admin/class-dc-skroutz-feed-admin.php:709
 msgid "Exact minute (0-59) of the hour to start the feed generation."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:867
-#: admin/class-dc-skroutz-feed-admin.php:900
+#: admin/class-dc-skroutz-feed-admin.php:939
+#: admin/class-dc-skroutz-feed-admin.php:972
 msgid "Exclude"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1185
+#: admin/class-dc-skroutz-feed-admin.php:1433
 msgid "Export Feeds"
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:174
+msgid "Feed generation monitor"
 msgstr ""
 
 #: admin/class-dc-skroutz-feed-admin.php:153
 msgid "Feed generation schedule"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1429
+#: admin/class-dc-skroutz-feed-admin.php:1677
 msgid "Filter by Skroutz Availability"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:253
+#: admin/class-dc-skroutz-feed-admin.php:260
 msgid "Fixed Shipping Cost"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:259
+#: admin/class-dc-skroutz-feed-admin.php:266
 msgid "Free Shipping over"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:605
+#: admin/class-dc-skroutz-feed-admin.php:677
 msgid "Frequency of feed generation in hours."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:952
+#: admin/class-dc-skroutz-feed-admin.php:1024
 msgid "Full logging"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:970
+#: admin/class-dc-skroutz-feed-admin.php:1042
 msgid ""
 "Full logging also shows problematic products and the reasons for skipping "
 "them."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1096
+#: admin/class-dc-skroutz-feed-admin.php:1204
 msgid "Hide from XML"
 msgstr ""
 
@@ -184,7 +211,7 @@ msgstr ""
 msgid "https://www.dicha.gr"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:553
+#: admin/class-dc-skroutz-feed-admin.php:625
 msgid ""
 "If \"No WP Cron\" is selected, then the XML generation will not run "
 "automatically using WP Cron, so you need to setup server cron jobs manually. "
@@ -192,36 +219,36 @@ msgid ""
 "time, and need more server resources."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:745
+#: admin/class-dc-skroutz-feed-admin.php:817
 msgid ""
 "If you are not sure what to choose, consult <a href=\"https://developer."
 "skroutz.gr/el/feedspec/#availability\" target=\"_blank\">Skroutz "
 "instructions</a>."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:870
-#: admin/class-dc-skroutz-feed-admin.php:903
+#: admin/class-dc-skroutz-feed-admin.php:942
+#: admin/class-dc-skroutz-feed-admin.php:975
 msgid "Include"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:205
+#: admin/class-dc-skroutz-feed-admin.php:212
 msgid "Include products on backorder"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:760
+#: admin/class-dc-skroutz-feed-admin.php:832
 msgid "Include products on backorder in XML"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:865
-#: admin/class-dc-skroutz-feed-admin.php:898
+#: admin/class-dc-skroutz-feed-admin.php:937
+#: admin/class-dc-skroutz-feed-admin.php:970
 msgid "Include/Exclude mode"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:338
+#: admin/class-dc-skroutz-feed-admin.php:358
 msgid "Last XML feed generated at:"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:265
+#: admin/class-dc-skroutz-feed-admin.php:272
 msgid "Log level"
 msgstr ""
 
@@ -229,27 +256,32 @@ msgstr ""
 msgid "Log settings"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:181
+#: admin/class-dc-skroutz-feed-admin.php:188
 msgid "Manufacturer"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:339
+#: admin/class-dc-skroutz-feed-admin.php:573
+msgid ""
+"Monitor the XML feed generation time and get notified in case of a problem."
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:359
 msgid "Never"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:950
+#: admin/class-dc-skroutz-feed-admin.php:1022
 msgid "No logging"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:606
+#: admin/class-dc-skroutz-feed-admin.php:678
 msgid "No WP Cron"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:671
+#: admin/class-dc-skroutz-feed-admin.php:743
 msgid "Other brand taxonomies:"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:795
+#: admin/class-dc-skroutz-feed-admin.php:867
 msgid "Other taxonomies:"
 msgstr ""
 
@@ -258,33 +290,39 @@ msgstr ""
 msgid "Plugin's Homepage"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:241
+#: admin/class-dc-skroutz-feed-admin.php:1407
+#, php-format
+msgid ""
+"Possible error in Skroutz XML generation process. Last time generated: %s"
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:248
 msgid "Product categories filter"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:247
+#: admin/class-dc-skroutz-feed-admin.php:254
 msgid "Product tags filter"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:548
+#: admin/class-dc-skroutz-feed-admin.php:620
 msgid "Select how frequently the XML feed will be updated."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:551
+#: admin/class-dc-skroutz-feed-admin.php:623
 msgid ""
 "Select the frequency of the XML feed generation, or disable automatic "
 "generation using WP Cron scheduling."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1586
+#: admin/class-dc-skroutz-feed-admin.php:1834
 msgid "Settings"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:501
+#: admin/class-dc-skroutz-feed-admin.php:565
 msgid "Settings about logging during the feed generation."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:483
+#: admin/class-dc-skroutz-feed-admin.php:547
 msgid "Settings about the scheduling of Skroutz/BestPrice XML feed generation."
 msgstr ""
 
@@ -292,30 +330,38 @@ msgstr ""
 msgid "Settings for Plugin Skroutz/Best Price XML"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:491
+#: admin/class-dc-skroutz-feed-admin.php:555
 msgid "Settings to control the product data for the XML feed."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:822
+#: admin/class-dc-skroutz-feed-admin.php:377
+msgid "Setup Guide & Documentation"
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:380
+msgid "Setup Guide for Users/Shop managers"
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:894
 msgid "Short description"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:193
+#: admin/class-dc-skroutz-feed-admin.php:200
 msgid "Size"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1385
-#: admin/class-dc-skroutz-feed-admin.php:1488
-#: admin/class-dc-skroutz-feed-admin.php:1513
+#: admin/class-dc-skroutz-feed-admin.php:1633
+#: admin/class-dc-skroutz-feed-admin.php:1736
+#: admin/class-dc-skroutz-feed-admin.php:1761
 msgid "Skroutz availability"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1428
+#: admin/class-dc-skroutz-feed-admin.php:1676
 msgid "Skroutz availability filter"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1207
-#: admin/class-dc-skroutz-feed-admin.php:1317
+#: admin/class-dc-skroutz-feed-admin.php:1455
+#: admin/class-dc-skroutz-feed-admin.php:1565
 msgid "Skroutz/BestPrice Availability"
 msgstr ""
 
@@ -323,31 +369,50 @@ msgstr ""
 msgid "Skroutz/BestPrice XML"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:341
+#: admin/class-dc-skroutz-feed-admin.php:361
 msgid "Submit the following URL to Skroutz or BestPrice:"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1210
-#: admin/class-dc-skroutz-feed-admin.php:1319
+#: admin/class-dc-skroutz-feed-admin.php:1061
+#, php-format
+msgid ""
+"The alert is sent if the XML has not been updated for more than %s hours."
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:1458
+#: admin/class-dc-skroutz-feed-admin.php:1567
 msgid ""
 "The availability to show in XML feed for Skroutz/BestPrice. If you select "
 "the \"Default availability\" option, the default availability from the "
 "plugin's settings will be used."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1244
+#: admin/class-dc-skroutz-feed-admin.php:1078
+msgid ""
+"The email address that the alert will be sent to. Enter only one email "
+"address."
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:1492
 msgid ""
 "The product's official EAN code or Barcode. A unique EAN/Barcode is "
 "allocated to each separate retail product."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1308
+#: admin/class-dc-skroutz-feed-admin.php:1410
+#, php-format
+msgid ""
+"The Skroutz XML file generation was successful and is back on schedule. Last "
+"time generated: %s"
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:1556
 msgid ""
 "The variation's official EAN code or Barcode. A unique EAN/Barcode is "
 "allocated to each separate retail product."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:805
+#: admin/class-dc-skroutz-feed-admin.php:877
 msgid ""
 "These attributes will be added to XML product name (if not included already)."
 msgstr ""
@@ -358,30 +423,34 @@ msgid ""
 "marketplaces."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:353
+#: admin/class-dc-skroutz-feed-admin.php:1062
+msgid "To change this limit, check out the documentation for developers."
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:372
 msgid "Update XML feed"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:459
+#: admin/class-dc-skroutz-feed-admin.php:523
 msgid "View XML"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:349
+#: admin/class-dc-skroutz-feed-admin.php:368
 msgid "View XML feed"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:846
+#: admin/class-dc-skroutz-feed-admin.php:918
 msgid ""
 "We suggest keeping this unchecked. Use the new native WooCommerce field "
 "called \"GTIN, UPC, EAN, or ISBN\" which is located under the \"SKU\" field."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:655
-#: admin/class-dc-skroutz-feed-admin.php:777
+#: admin/class-dc-skroutz-feed-admin.php:727
+#: admin/class-dc-skroutz-feed-admin.php:849
 msgid "WooCommerce Brands"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:175
+#: admin/class-dc-skroutz-feed-admin.php:182
 msgid "WP Cron Schedule"
 msgstr ""
 
@@ -389,22 +458,22 @@ msgstr ""
 msgid "XML Feed for Skroutz & BestPrice for WooCommerce"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:464
+#: admin/class-dc-skroutz-feed-admin.php:528
 msgid ""
 "XML feed generation failed. Enable and then check plugin logs for more "
 "details."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:337
+#: admin/class-dc-skroutz-feed-admin.php:357
 msgid "XML Feed Tools"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:457
+#: admin/class-dc-skroutz-feed-admin.php:521
 msgid "XML feed was generated successfully!"
 msgstr ""
 
 #. %s: Link to WooCommerce Logs page
-#: admin/class-dc-skroutz-feed-admin.php:966
+#: admin/class-dc-skroutz-feed-admin.php:1038
 #, php-format
 msgid ""
 "You can find the logs in the <a href=\"%s\" target=\"_blank\">WooCommerce "
@@ -415,6 +484,6 @@ msgstr ""
 msgid "Δείτε όλα τα plugins της Digital Challenge"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1516
+#: admin/class-dc-skroutz-feed-admin.php:1764
 msgid "— No Change —"
 msgstr ""

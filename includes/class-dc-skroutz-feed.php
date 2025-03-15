@@ -14,21 +14,21 @@ class Dicha_Skroutz_Feed {
 	 *
 	 * @var Dicha_Skroutz_Feed_Loader $loader Maintains and registers all hooks for the plugin.
 	 */
-	protected $loader;
+	protected Dicha_Skroutz_Feed_Loader $loader;
 
 	/**
 	 * The unique identifier of this plugin.
 	 *
 	 * @var string $plugin_name The string used to uniquely identify this plugin.
 	 */
-	protected $plugin_name;
+	protected string $plugin_name;
 
 	/**
 	 * The current version of the plugin.
 	 *
 	 * @var string $version The current version of the plugin.
 	 */
-	protected $version;
+	protected string $version;
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -123,8 +123,10 @@ class Dicha_Skroutz_Feed {
 		$this->loader->add_action( 'admin_post_save_settings', $plugin_admin, 'save_settings' );
 		$this->loader->add_filter( 'plugin_action_links', $plugin_admin, 'add_plugin_action_links', 10, 2 );
 
+
 		// declare WC compatibilities
 		$this->loader->add_action( 'before_woocommerce_init', $plugin_admin, 'declare_compatibility_with_wc_features' );
+
 
 		// Product tabs and custom product/variation fields
 		$this->loader->add_filter( 'woocommerce_product_data_tabs', $plugin_admin, 'register_new_exports_tab' );
@@ -146,6 +148,9 @@ class Dicha_Skroutz_Feed {
 		$this->loader->add_action( 'woocommerce_product_quick_edit_end', $plugin_admin, 'add_availability_field_to_quick_edit_box', 20 );
 		$this->loader->add_action( 'woocommerce_product_bulk_edit_end', $plugin_admin, 'add_availability_field_to_bulk_edit_box' );
 		$this->loader->add_action( 'save_post', $plugin_admin, 'quick_and_bulk_edit_save_availability' );
+
+		// Feed monitor
+		$this->loader->add_action( 'dicha_skroutz_feed_monitor', $plugin_admin, 'check_feed_generation_status' );
 		
 		
 		// enqueues
@@ -180,7 +185,7 @@ class Dicha_Skroutz_Feed {
 	 *
 	 * @return string The name of the plugin.
 	 */
-	public function get_plugin_name() {
+	public function get_plugin_name(): string {
 		return $this->plugin_name;
 	}
 
@@ -189,7 +194,7 @@ class Dicha_Skroutz_Feed {
 	 *
 	 * @return Dicha_Skroutz_Feed_Loader Orchestrates the hooks of the plugin.
 	 */
-	public function get_loader() {
+	public function get_loader(): Dicha_Skroutz_Feed_Loader {
 		return $this->loader;
 	}
 
@@ -198,7 +203,7 @@ class Dicha_Skroutz_Feed {
 	 *
 	 * @return string The version number of the plugin.
 	 */
-	public function get_version() {
+	public function get_version(): string {
 		return $this->version;
 	}
 }

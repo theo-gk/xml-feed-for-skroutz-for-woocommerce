@@ -11,6 +11,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 if ( function_exists( 'as_unschedule_all_actions' ) ) {
 	as_unschedule_all_actions( 'dicha_skroutz_feed_generation', [], 'dicha_feeds_generation' );
+	as_unschedule_all_actions( 'dicha_skroutz_feed_monitor', [], 'dicha_feeds_generation' );
 }
 
 dicha_skroutz_feed_remove_plugin_options();

@@ -169,6 +169,13 @@ class Dicha_Skroutz_Feed_Admin {
 			'dicha_skroutz_feed_settings'
 		);
 
+		add_settings_section(
+			'dicha_skroutz_feed_monitor_section',
+			__( 'Feed generation monitor', 'xml-feed-for-skroutz-for-woocommerce' ),
+			[ $this, 'print_monitor_settings_info' ],
+			'dicha_skroutz_feed_settings'
+		);
+
 		$settings = [
 			[
 				'dicha_skroutz_feed_cron' => [
@@ -266,6 +273,18 @@ class Dicha_Skroutz_Feed_Admin {
 					'dicha_skroutz_feed_logs_section'
 				]
 			],
+			[
+				'dicha_skroutz_feed_monitor_enabled' => [
+					__( 'Enable Generation Monitor', 'xml-feed-for-skroutz-for-woocommerce' ),
+					'dicha_skroutz_feed_monitor_section'
+				]
+			],
+			[
+				'dicha_skroutz_feed_monitor_email' => [
+					__( 'Email Address to Notify', 'xml-feed-for-skroutz-for-woocommerce' ),
+					'dicha_skroutz_feed_monitor_section'
+				]
+			],
 		];
 
 		// don't add labels for these, they will be added manually
@@ -330,7 +349,8 @@ class Dicha_Skroutz_Feed_Admin {
 
 		// todo maybe create an options migrator
 
-		$last_run = get_option( 'dicha_skroutz_feed_last_run' );
+		$last_run = $this->get_last_run_display_time();
+
 		?>
 		<div class="wrap <?php echo esc_attr( $this->plugin_name ); ?>-settings">
 			<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="dicha-skroutz-feed-tools-wrapper">
@@ -344,8 +364,7 @@ class Dicha_Skroutz_Feed_Admin {
 				</p>
 				<p class="submit">
 					<?php if ( $last_run ) : ?>
-						<a href="<?php echo esc_url( $this->get_default_xml_file_url() ); ?>" target="_blank"
-						   class="button button-primary">
+						<a href="<?php echo esc_url( $this->get_default_xml_file_url() ); ?>" target="_blank" class="button button-primary">
 							<?php esc_html_e( 'View XML feed', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
 						</a>
 					<?php endif; ?>
@@ -354,6 +373,19 @@ class Dicha_Skroutz_Feed_Admin {
 				</p>
 				<input type="hidden" name="action" value="dicha_skroutz_feed_create_feed">
 			</form>
+			<div class="dicha-skroutz-feed-documentation-wrapper">
+				<h2><?php esc_html_e( 'Setup Guide & Documentation', 'xml-feed-for-skroutz-for-woocommerce' ); ?></h2>
+				<p>
+					<a href="https://doc.clickup.com/2582906/p/h/2eubu-58615/d0b94a4b2c5331e/2eubu-58675" target="_blank" rel="noopener noreferrer">
+						<?php esc_html_e( 'Setup Guide for Users/Shop managers', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
+					</a>
+					<br>
+					<a href="https://doc.clickup.com/2582906/p/h/2eubu-58615/d0b94a4b2c5331e/2eubu-58695" target="_blank" rel="noopener noreferrer">
+						<?php esc_html_e( 'Documentation for Developers', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
+					</a>
+				</p>
+				<hr>
+			</div>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<?php
 				// This prints out all hidden setting fields
@@ -391,6 +423,8 @@ class Dicha_Skroutz_Feed_Admin {
 		update_option( 'dicha_skroutz_feed_shipping_cost', wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_shipping_cost'] ?? '' ) ), false );
 		update_option( 'dicha_skroutz_feed_free_shipping', wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_free_shipping'] ?? '' ) ), false );
 		update_option( 'dicha_skroutz_feed_log_level', wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_log_level'] ?? '' ) ), false );
+		update_option( 'dicha_skroutz_feed_monitor_enabled', wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_monitor_enabled'] ?? '' ) ), false );
+		update_option( 'dicha_skroutz_feed_monitor_email', sanitize_email( wp_unslash( $_POST['dicha_skroutz_feed_monitor_email'] ?? '' ) ), false );
 
 
 		// Cron options and handling
@@ -406,8 +440,10 @@ class Dicha_Skroutz_Feed_Admin {
 			'm' => $cron_min
 		];
 
-		$this->maybe_set_cron( $new_cron_options );
 		update_option( 'dicha_skroutz_feed_cron', $new_cron_options, false );
+
+		$this->maybe_set_generation_cron( $new_cron_options );
+		$this->maybe_set_monitor_cron( wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_monitor_enabled'] ?? '' ) ) );
 
 		// redirect with success update notice
 		wp_redirect( admin_url( 'admin.php?page=' . DICHA_SKROUTZ_FEED_SLUG . '&updated=1' ) );
@@ -422,7 +458,7 @@ class Dicha_Skroutz_Feed_Admin {
 	 *
 	 * @return void
 	 */
-	function maybe_set_cron( array $new_cron_options ): void {
+	function maybe_set_generation_cron( array $new_cron_options ): void {
 
 		$hook  = 'dicha_skroutz_feed_generation';
 		$args  = [];
@@ -435,6 +471,33 @@ class Dicha_Skroutz_Feed_Admin {
 			$cron_schedule = sprintf( '%1$d %2$s * * *', $new_cron_options['m'], $new_cron_options['h'] > 1 ? "*/{$new_cron_options['h']}" : "*" );
 
 			as_schedule_cron_action( time(), $cron_schedule, $hook, $args, $group, true, 9 );
+		}
+	}
+
+
+	/**
+	 * Manages the scheduling or unscheduling of the feed monitor cron job.
+	 *
+	 * @param bool $enable_cron Indicates whether the cron job should be enabled (true) or disabled (false).
+	 *
+	 * @return void
+	 */
+	function maybe_set_monitor_cron( bool $enable_cron ): void {
+
+		$hook              = 'dicha_skroutz_feed_monitor';
+		$args              = [];
+		$group             = 'dicha_feeds_generation';
+		$already_scheduled = function_exists( 'as_has_scheduled_action' ) ? as_has_scheduled_action( $hook, $args, $group ) : as_next_scheduled_action( $hook, $args, $group );
+
+		if ( $enable_cron ) {
+			if ( ! $already_scheduled ) {
+				as_schedule_recurring_action( time(), HOUR_IN_SECONDS, $hook, $args, $group );
+			}
+		}
+		else {
+			if ( $already_scheduled ) {
+				as_unschedule_all_actions( $hook, $args, $group );
+			}
 		}
 	}
 
@@ -499,6 +562,14 @@ class Dicha_Skroutz_Feed_Admin {
 	 */
 	function print_logs_settings_info(): void {
 		esc_html_e( 'Settings about logging during the feed generation.', 'xml-feed-for-skroutz-for-woocommerce' );
+	}
+
+
+	/**
+	 * Prints the feed monitor section description.
+	 */
+	function print_monitor_settings_info(): void {
+		esc_html_e( 'Monitor the XML feed generation time and get notified in case of a problem.', 'xml-feed-for-skroutz-for-woocommerce' );
 	}
 
 
@@ -973,6 +1044,42 @@ class Dicha_Skroutz_Feed_Admin {
 	}
 
 
+	/**
+	 * Prints the HTML for the monitor enable field in the settings.
+	 */
+	function dicha_skroutz_feed_monitor_enabled_callback(): void {
+
+		$current_val       = wc_string_to_bool( get_option( 'dicha_skroutz_feed_monitor_enabled', false ) );
+		$max_hours_allowed = apply_filters( 'dicha_skroutz_feed_max_hours_before_alert', 4 );
+		?>
+		<label for="dicha_skroutz_feed_monitor_enabled">
+			<input type="checkbox" id="dicha_skroutz_feed_monitor_enabled" name="dicha_skroutz_feed_monitor_enabled" value="yes"<?php checked( $current_val ); ?>>
+			<?php esc_html_e( 'Enable a monitor to alert you if the XML generation fails. An email will be sent to the email address below.', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
+		</label>
+		<p class="desc">
+			<?php printf( esc_html__( 'The alert is sent if the XML has not been updated for more than %s hours.', 'xml-feed-for-skroutz-for-woocommerce' ), $max_hours_allowed ); ?>
+			<?php esc_html_e( 'To change this limit, check out the documentation for developers.', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
+		</p>
+		<?php
+	}
+
+
+	/**
+	 * Prints the HTML for the monitor email field in the settings.
+	 */
+	function dicha_skroutz_feed_monitor_email_callback(): void {
+		printf(
+			'<input type="email" id="dicha_skroutz_feed_monitor_email" name="dicha_skroutz_feed_monitor_email" value="%s" class="regular-text" />',
+			esc_attr( get_option( 'dicha_skroutz_feed_monitor_email' ) )
+		);
+		?>
+		<p class="desc">
+			<?php esc_html_e( 'The email address that the alert will be sent to. Enter only one email address.', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
+		</p>
+		<?php
+	}
+
+
 	
 	/**
 	 *************************************
@@ -1162,6 +1269,203 @@ class Dicha_Skroutz_Feed_Admin {
 		$feed_filename   = self::get_feed_filename();
 
 		return $uploads_baseurl . '/' . $feed_folder . '/' . $feed_filename . '.xml';
+	}
+
+
+	/**
+	 * Retrieve the display time of the last XML generation in a formatted string.
+	 * This method formats display time to a human-readable date/time format
+	 * in the current site's timezone, and appends the UTC offset.
+	 *
+	 * @return string The formatted last run display time or an empty string if not available.
+	 */
+	private function get_last_run_display_time(): string {
+
+		$last_run = get_option( 'dicha_skroutz_feed_last_run' );
+
+		if ( ! $last_run ) return '';
+
+		if ( is_numeric( $last_run ) ) {
+			$last_run = get_date_from_gmt( date( 'Y-m-d H:i:s', $last_run ), 'd/m/Y H:i:s' );
+
+			$gmt_offset = get_option( 'gmt_offset', 0 );
+			$last_run   .= " UTC+$gmt_offset";
+		}
+
+		return $last_run;
+	}
+
+
+
+	/**
+	 ***********************************
+	 ***** FEED GENERATION MONITOR *****
+	 ***********************************
+	 */
+
+	/**
+	 * Checks the feed generation status and determines if an alert should be sent based on the elapsed time since the last generation.
+	 *
+	 * @return void
+	 */
+	public function check_feed_generation_status(): void {
+
+		$last_run_utc_timestamp = get_option( 'dicha_skroutz_feed_last_run' );
+
+		if ( ! is_numeric( $last_run_utc_timestamp ) ) return;
+
+		$current_time_utc       = current_time( 'timestamp', 1 );
+		$seconds_since_last_run = $current_time_utc - $last_run_utc_timestamp;
+		$generation_error       = $seconds_since_last_run > $this->get_max_seconds_allowed_not_generated();
+
+		$this->maybe_send_alert_about_xml_generation( $generation_error );
+	}
+
+
+	/**
+	 * Retrieves the maximum seconds allowed before a specific alert is generated.
+	 *
+	 * @return float The maximum number of seconds allowed.
+	 */
+	private function get_max_seconds_allowed_not_generated(): float {
+
+		$max_hours_allowed = apply_filters( 'dicha_skroutz_feed_max_hours_before_alert', 4 );
+
+		return floor( $max_hours_allowed * HOUR_IN_SECONDS );
+	}
+
+
+	/**
+	 * Decides if an alert about XML generation status should be sent, depending on certain conditions.
+	 * Only one error alert is sent every 24h, to avoid spamming.
+	 * Also, a "success" alert is sent if generation succeeds after a failure.
+	 *
+	 * @param bool $generation_error Indicates if there was an error in the XML generation process.
+	 *
+	 * @return void
+	 */
+	private function maybe_send_alert_about_xml_generation( bool $generation_error ): void {
+
+		$should_alert          = false;
+		$current_alert_time    = current_time( 'timestamp', 1 );
+		$last_alert_time       = get_option( 'dicha_skroutz_feed_last_alert_time' );
+		$last_run_display_time = $this->get_last_run_display_time();
+
+		if ( $generation_error ) {
+			if ( ! $last_alert_time ) {
+				$should_alert = true;
+				update_option( 'dicha_skroutz_feed_last_alert_time', $current_alert_time, false );
+			}
+			else {
+				if ( $current_alert_time - $last_alert_time > HOUR_IN_SECONDS * 24 ) {
+					$should_alert = true;
+					update_option( 'dicha_skroutz_feed_last_alert_time', $current_alert_time, false );
+				}
+			}
+
+			$cron_options = get_option( 'dicha_skroutz_feed_cron', [] );
+
+			// if generation error, check if cron should be and is scheduled - if not, try to reschedule
+			if ( isset( $cron_options['h'] ) && $cron_options['h'] !== '' ) {
+				$this->maybe_set_generation_cron( $cron_options );
+			}
+		}
+		else {
+			if ( $last_alert_time ) {
+				$should_alert = true;
+				delete_option( 'dicha_skroutz_feed_last_alert_time' );
+			}
+		}
+
+		if ( $should_alert ) {
+			$this->send_email_alert_about_xml_generation( $generation_error, $last_run_display_time );
+			do_action( 'dicha_skroutz_feed_alert_triggered', $generation_error, $last_run_display_time );
+		}
+
+		if ( 'disabled' !== get_option( 'dicha_skroutz_feed_log_level' ) ) {
+			$logger  = wc_get_logger();
+			$context = [ 'source' => DICHA_SKROUTZ_FEED_SLUG . '-generation-alert' ];
+
+			if ( $generation_error ) {
+				$logger->alert( "Possible error in Skroutz XML generation process. Last time generated: $last_run_display_time", $context );
+			}
+			elseif ( $should_alert ) { // first success after failure
+				$logger->info( "The Skroutz XML file generation was successful and is back on schedule. Last time generated: $last_run_display_time", $context );
+			}
+		}
+	}
+
+
+	/**
+	 * Sends an email alert about the status of the XML generation.
+	 *
+	 * @param bool   $generation_error      Indicates if there was an error during XML generation. True if error occurred.
+	 * @param string $last_run_display_time The formatted time of the last XML successful generation.
+	 *
+	 * @return void
+	 */
+	private function send_email_alert_about_xml_generation( bool $generation_error, string $last_run_display_time ): void {
+
+		$recipient = is_email( get_option( 'dicha_skroutz_feed_monitor_email' ) );
+
+		if ( ! $recipient ) return;
+
+		// sent email to the user's language (if a user with this email exists in WP)
+		if ( function_exists( 'switch_to_user_locale' ) ) {
+			$wp_user = get_user_by( 'email', $recipient );
+
+			if ( $wp_user ) {
+				$switched_locale = switch_to_user_locale( $wp_user->ID );
+			}
+			else {
+				$switched_locale = switch_to_locale( get_locale() );
+			}
+		}
+
+		// send the email
+		$subject = $this->get_email_alert_subject();
+		$message = $this->get_email_alert_message( $generation_error, $last_run_display_time );
+		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];
+
+		wp_mail( $recipient, $subject, $message, $headers );
+
+		// reset language
+		if ( isset( $switched_locale ) && $switched_locale ) {
+			restore_previous_locale();
+		}
+	}
+
+
+	/**
+	 * Generates the subject line for an email alert regarding Skroutz XML generation.
+	 *
+	 * @return string The formatted email subject line including the site name and current date.
+	 */
+	private function get_email_alert_subject(): string {
+		$site_name = get_bloginfo();
+
+		return sprintf( esc_html__( 'Alert about Skroutz XML generation at %1$s (%2$s)', 'xml-feed-for-skroutz-for-woocommerce' ), $site_name, current_time( 'D d-m-Y' ) );
+	}
+
+
+	/**
+	 * Generate an email alert message based on the XML generation status.
+	 *
+	 * @param bool   $generation_error      Indicates if there was an error during XML generation. True if error occurred.
+	 * @param string $last_run_display_time The formatted time of the last XML successful generation.
+	 *
+	 * @return string The formatted email alert message.
+	 */
+	private function get_email_alert_message( bool $generation_error, string $last_run_display_time ): string {
+
+		if ( $generation_error ) {
+			$message = sprintf( __( 'Possible error in Skroutz XML generation process. Last time generated: %s', 'xml-feed-for-skroutz-for-woocommerce' ), $last_run_display_time );
+		}
+		else {
+			$message = sprintf( __( 'The Skroutz XML file generation was successful and is back on schedule. Last time generated: %s', 'xml-feed-for-skroutz-for-woocommerce' ), $last_run_display_time );
+		}
+
+		return esc_html( $message );
 	}
 
 

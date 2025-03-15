@@ -1133,11 +1133,8 @@ class Dicha_Skroutz_Feed_Creator {
 		echo "-> Saving: DONE!\n";
 		echo "#========================================================================#\n";
 
-		try {
-			$dt = new DateTime( "now", new DateTimeZone( 'Europe/Athens' ) );
-			update_option( 'dicha_skroutz_feed_last_run', $dt->format( 'd/m/Y H:i:s' ), false );
-		}
-		catch ( Exception $e ) {}
+		// save last successful run time in UTC timestamp
+		update_option( 'dicha_skroutz_feed_last_run', current_time( 'timestamp', true ), false );
 	}
 
 
