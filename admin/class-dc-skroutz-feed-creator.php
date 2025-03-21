@@ -182,11 +182,14 @@ class Dicha_Skroutz_Feed_Creator {
 				$variations_groups = [];
 
 				// 1. find variation atts and available variations
-				$available_variations    = $product->get_available_variations( 'objects' );
-				$variation_attributes    = $product->get_variation_attributes();
-				$has_size_variations     = $this->has_size_options( $variation_attributes );
-				$has_non_size_variations = $this->has_non_size_options( $variation_attributes );
-				$has_color_variations    = $this->has_color_options( $variation_attributes );
+				$cat_supports_vars_nodes   = empty( array_intersect( $product->get_category_ids(), $this->options['cats_with_no_vars_support'] ) );
+				$size_var_atts_for_product = $cat_supports_vars_nodes ? $this->options['size'] : [];
+				$size_var_atts_for_product = (array) apply_filters( 'dicha_skroutz_feed_size_vars_atts_for_product', $size_var_atts_for_product, $product, $this->options['size'], $this->feed_type );
+				$available_variations      = $product->get_available_variations( 'objects' );
+				$variation_attributes      = $product->get_variation_attributes();
+				$has_size_variations       = $this->has_size_options( $variation_attributes, $size_var_atts_for_product );
+				$has_non_size_variations   = $this->has_non_size_options( $variation_attributes, $size_var_atts_for_product );
+				$has_color_variations      = $this->has_color_options( $variation_attributes );
 
 				// var_dump( $variation_attributes );
 				// var_dump( $available_variations );
@@ -238,7 +241,7 @@ class Dicha_Skroutz_Feed_Creator {
 								$attribute_slug = $this->wc_product_attributes_sanitized[ $attribute_slug ];
 							}
 
-							if ( in_array( $attribute_slug, $this->options['size'] ) || in_array( $attribute_slug, $this->options['color'] ) ) {
+							if ( in_array( $attribute_slug, $size_var_atts_for_product ) || in_array( $attribute_slug, $this->options['color'] ) ) {
 								continue 2;
 							}
 						}
@@ -261,7 +264,7 @@ class Dicha_Skroutz_Feed_Creator {
 							}
 
 							// if "size" attribute or attribute with "Any" value, then no grouping happens
-							if ( in_array( $attribute_slug, $this->options['size'] ) || empty( $attribute_value ) ) continue;
+							if ( in_array( $attribute_slug, $size_var_atts_for_product ) || empty( $attribute_value ) ) continue;
 
 							$attribute_term = taxonomy_exists( $attribute_slug ) ? get_term_by( 'slug', $attribute_value, $attribute_slug ) : false;
 							$attribute_term = ! is_wp_error( $attribute_term ) && $attribute_term ? $attribute_term : false;
@@ -362,19 +365,20 @@ class Dicha_Skroutz_Feed_Creator {
 	private function init_options(): void {
 
 		$options = [
-			'manufacturer'       => $this->prefix_attributes( get_option( 'dicha_skroutz_feed_manufacturer', [] ) ),
-			'color'              => $this->prefix_attributes( get_option( 'dicha_skroutz_feed_color', [] ) ),
-			'size'               => $this->prefix_attributes( get_option( 'dicha_skroutz_feed_size', [] ) ),
-			'title_attributes'   => $this->prefix_attributes( get_option( 'dicha_skroutz_feed_title_attributes', [] ) ),
-			'xml_availability'   => get_option( 'dicha_skroutz_feed_availability' ),
-			'include_backorders' => get_option( 'dicha_skroutz_feed_include_backorders' ),
-			'description'        => get_option( 'dicha_skroutz_feed_description', 'short' ),
-			'flat_rate'          => get_option( 'dicha_skroutz_feed_shipping_cost' ),
-			'flat_rate_free'     => get_option( 'dicha_skroutz_feed_free_shipping' ),
-			'selected_cats'      => get_option( 'dicha_skroutz_feed_filter_categories', [] ),
-			'selected_tags'      => get_option( 'dicha_skroutz_feed_filter_tags', [] ),
-			'cats_incl_mode'     => get_option( 'dicha_skroutz_incl_excl_mode_categories' ),
-			'tags_incl_mode'     => get_option( 'dicha_skroutz_incl_excl_mode_tags' ),
+			'manufacturer'              => $this->prefix_attributes( get_option( 'dicha_skroutz_feed_manufacturer', [] ) ),
+			'color'                     => $this->prefix_attributes( get_option( 'dicha_skroutz_feed_color', [] ) ),
+			'size'                      => $this->prefix_attributes( get_option( 'dicha_skroutz_feed_size', [] ) ),
+			'title_attributes'          => $this->prefix_attributes( get_option( 'dicha_skroutz_feed_title_attributes', [] ) ),
+			'xml_availability'          => get_option( 'dicha_skroutz_feed_availability' ),
+			'include_backorders'        => get_option( 'dicha_skroutz_feed_include_backorders' ),
+			'description'               => get_option( 'dicha_skroutz_feed_description', 'short' ),
+			'flat_rate'                 => get_option( 'dicha_skroutz_feed_shipping_cost' ),
+			'flat_rate_free'            => get_option( 'dicha_skroutz_feed_free_shipping' ),
+			'selected_cats'             => get_option( 'dicha_skroutz_feed_filter_categories', [] ),
+			'selected_tags'             => get_option( 'dicha_skroutz_feed_filter_tags', [] ),
+			'cats_incl_mode'            => get_option( 'dicha_skroutz_incl_excl_mode_categories' ),
+			'tags_incl_mode'            => get_option( 'dicha_skroutz_incl_excl_mode_tags' ),
+			'cats_with_no_vars_support' => (array) apply_filters( 'dicha_skroutz_feed_cats_with_no_variations_support', [], $this->feed_type ),
 		];
 
 		$this->options = apply_filters( 'dicha_skroutz_feed_custom_options', $options, $this->feed_type );
@@ -605,7 +609,7 @@ class Dicha_Skroutz_Feed_Creator {
 			}
 
 			if ( empty( $group_link ) ) {
-				$group_link = $this->data_helper->skroutz_get_url( $variation, true );
+				$group_link = $this->data_helper->skroutz_get_url( $variation, $has_size_variations );
 			}
 
 			// Get variation weight if not set on parent level
@@ -757,8 +761,8 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return bool True if a "size" attribute exists.
 	 */
-	private function has_size_options( array $variation_attributes ): bool {
-		return ! empty( array_intersect( array_keys( $variation_attributes ), $this->options['size'] ) );
+	private function has_size_options( array $variation_attributes, array $size_var_atts_for_product ): bool {
+		return ! empty( array_intersect( array_keys( $variation_attributes ), $size_var_atts_for_product ) );
 	}
 
 
@@ -769,8 +773,8 @@ class Dicha_Skroutz_Feed_Creator {
 	 *
 	 * @return bool True if any non "size" attribute exists.
 	 */
-	private function has_non_size_options( array $variation_attributes ): bool {
-		return ! empty( array_diff( array_keys( $variation_attributes ), $this->options['size'] ) );
+	private function has_non_size_options( array $variation_attributes, array $size_var_atts_for_product ): bool {
+		return ! empty( array_diff( array_keys( $variation_attributes ), $size_var_atts_for_product ) );
 	}
 
 
