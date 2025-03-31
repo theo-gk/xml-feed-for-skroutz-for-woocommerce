@@ -1,11 +1,11 @@
 === XML Feed for Skroutz & BestPrice for WooCommerce ===
 Contributors: dichagr, theogk
 Tags: skroutz, bestprice, xml, feed, marketplace
-Stable tag: 1.0.4
+Stable tag: 1.1.0
 Requires at least: 5.6
-Tested up to: 6.7.2
+Tested up to: 6.8
 WC requires at least: 6.2.0
-WC tested up to: 9.7.0
+WC tested up to: 9.8.0
 Requires PHP: 7.4
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -38,6 +38,7 @@ This plugin will help you to easily pass the strict and challenging Skroutz XML 
 - Add a fixed shipping rate.
 - Developer-friendly ways to customize **ALL** feed data fields, like ID, product title, SKU, availability, images, description, category, price, quantity, weight etc.
 - Schedule automatic XML generation using WP Cron or server cron jobs from Plesk/cPanel/SiteGround/GoDaddy or whatever platform you use.
+- Email notification in case XML generation fails.
 - ZIP format available for huge product feeds.
 - WP CLI support for generating the XML file.
 
@@ -46,6 +47,7 @@ This plugin will help you to easily pass the strict and challenging Skroutz XML 
 - Optimized to run on servers with low resources. The minimum PHP memory officially required is 256MB, but it can run with even lower memory for small-sized eshops. The recommended memory for optimal performance is 512MB-1024MB+.
 
 = Documentation =
+[Video Setup Guide](https://youtu.be/Ssr_-QH-7zc)
 [Documentation for Users/Shop managers](https://doc.clickup.com/2582906/p/h/2eubu-58615/d0b94a4b2c5331e/2eubu-58675)
 [Documentation for Developers](https://doc.clickup.com/2582906/p/h/2eubu-58615/d0b94a4b2c5331e/2eubu-58695)
 
@@ -60,6 +62,10 @@ This plugin will help you to easily pass the strict and challenging Skroutz XML 
 1. Plugin settings.
 
 == Frequently Asked Questions ==
+
+ = I found a bug or something doesn't work. How can I get support? =
+You can post you problem in the [official support forum](https://wordpress.org/support/plugin/xml-feed-for-skroutz-for-woocommerce/), describing your problem with as much details as possible, and maybe incude some error logs, or screenshots of the problem.
+Please wait patiently until you receive our free support for this free plugin. We try to reply as soon as possible, but it can take some days in some occasions.
 
  = If it's so good, why it's free? =
 We use this plugin for years in our customers eshops with great results and 100% success rate in XML validation and approval from Skroutz and BestPrice.
@@ -90,6 +96,9 @@ The plugin allows you to schedule automatic updates using the native WP Cron, or
 Yes, you can use the WP CLI or a server script to generate the XML.
 Please read the [documentation for developers](https://doc.clickup.com/2582906/p/h/2eubu-58615/d0b94a4b2c5331e/2eubu-58695) to find out how.
 
+ = Is there a way to know if XML generation failed? =
+Yes, you can enable the XML monitor and enter your email in the appropriate field in plugin settings and you will get notified if the XML has not updated for over 4 hours (also customizable).
+
  = What are the system requirements for using this plugin? =
 The plugin requires WooCommerce 6.2.0 or later and WordPress 5.6 or later.
 It is optimized to run on servers with low resources and the minimum PHP memory officially required is 256MB, but it can run with even lower memory for small-sized eshops. The recommended memory for optimal performance is 512MB-1024MB+.
@@ -103,6 +112,14 @@ It is optimized to run on servers with low resources and the minimum PHP memory 
 4. Setup the plugin settings navigating through the left main menu: Digital Challenge > Skroutz/BestPrice XML
 
 == Changelog ==
+= 1.1.0 =
+*Release Date - 31 Mar 2025*
+* Feature: Send an email alert in case of an error in XML generation.
+* Feature: Add ability to remove size variations for specific categories that Skroutz does not support them.
+* Improvement: Make XML generation cron more stable and reschedule in case of permanent failure.
+* Improvement: Better calculation of mpn for variable products with size.
+* Compatibility: Checked with the latest WordPress and WooCommerce versions.
+
 = 1.0.4 =
 *Release Date - 25 Feb 2025*
 * Compatibility: Checked with the latest WordPress and WooCommerce versions.

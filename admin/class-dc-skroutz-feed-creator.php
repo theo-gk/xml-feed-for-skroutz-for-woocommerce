@@ -310,7 +310,7 @@ class Dicha_Skroutz_Feed_Creator {
 				else {
 					// a list of used skus, to prevent "duplicate sku" errors when variations have no own sku, only on parent level
 					$groups_skus_list = [];
-					$groups_count    = count( $variations_groups );
+					$groups_count     = count( $variations_groups );
 
 					foreach ( $variations_groups as $variations_group ) {
 

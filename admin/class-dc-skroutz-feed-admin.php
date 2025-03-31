@@ -443,7 +443,7 @@ class Dicha_Skroutz_Feed_Admin {
 		update_option( 'dicha_skroutz_feed_cron', $new_cron_options, false );
 
 		$this->maybe_set_generation_cron( $new_cron_options );
-		$this->maybe_set_monitor_cron( wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_monitor_enabled'] ?? '' ) ) );
+		$this->maybe_set_monitor_cron( wc_string_to_bool( wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_monitor_enabled'] ?? '' ) ) ) );
 
 		// redirect with success update notice
 		wp_redirect( admin_url( 'admin.php?page=' . DICHA_SKROUTZ_FEED_SLUG . '&updated=1' ) );
@@ -1286,8 +1286,8 @@ class Dicha_Skroutz_Feed_Admin {
 		if ( ! $last_run ) return '';
 
 		if ( is_numeric( $last_run ) ) {
-			$last_run = get_date_from_gmt( date( 'Y-m-d H:i:s', $last_run ), 'd/m/Y H:i:s' );
 
+			$last_run   = get_date_from_gmt( date( 'Y-m-d H:i:s', $last_run ), 'd/m/Y H:i:s' );
 			$gmt_offset = get_option( 'gmt_offset', 0 );
 			$last_run   .= " UTC+$gmt_offset";
 		}
@@ -1314,7 +1314,7 @@ class Dicha_Skroutz_Feed_Admin {
 
 		if ( ! is_numeric( $last_run_utc_timestamp ) ) return;
 
-		$current_time_utc       = current_time( 'timestamp', 1 );
+		$current_time_utc       = current_time( 'timestamp', true );
 		$seconds_since_last_run = $current_time_utc - $last_run_utc_timestamp;
 		$generation_error       = $seconds_since_last_run > $this->get_max_seconds_allowed_not_generated();
 
@@ -1347,7 +1347,7 @@ class Dicha_Skroutz_Feed_Admin {
 	private function maybe_send_alert_about_xml_generation( bool $generation_error ): void {
 
 		$should_alert          = false;
-		$current_alert_time    = current_time( 'timestamp', 1 );
+		$current_alert_time    = current_time( 'timestamp', true );
 		$last_alert_time       = get_option( 'dicha_skroutz_feed_last_alert_time' );
 		$last_run_display_time = $this->get_last_run_display_time();
 
@@ -1357,7 +1357,7 @@ class Dicha_Skroutz_Feed_Admin {
 				update_option( 'dicha_skroutz_feed_last_alert_time', $current_alert_time, false );
 			}
 			else {
-				if ( $current_alert_time - $last_alert_time > HOUR_IN_SECONDS * 24 ) {
+				if ( $current_alert_time - $last_alert_time >= HOUR_IN_SECONDS * 24 ) {
 					$should_alert = true;
 					update_option( 'dicha_skroutz_feed_last_alert_time', $current_alert_time, false );
 				}
@@ -1442,9 +1442,7 @@ class Dicha_Skroutz_Feed_Admin {
 	 * @return string The formatted email subject line including the site name and current date.
 	 */
 	private function get_email_alert_subject(): string {
-		$site_name = get_bloginfo();
-
-		return sprintf( esc_html__( 'Alert about Skroutz XML generation at %1$s (%2$s)', 'xml-feed-for-skroutz-for-woocommerce' ), $site_name, current_time( 'D d-m-Y' ) );
+		return sprintf( esc_html__( 'Alert about Skroutz XML generation at %1$s (%2$s)', 'xml-feed-for-skroutz-for-woocommerce' ), get_bloginfo(), current_time( 'D d-m-Y' ) );
 	}
 
 

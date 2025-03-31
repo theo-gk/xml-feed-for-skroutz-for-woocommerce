@@ -149,6 +149,7 @@ class Dicha_Skroutz_Feed {
 		$this->loader->add_action( 'woocommerce_product_bulk_edit_end', $plugin_admin, 'add_availability_field_to_bulk_edit_box' );
 		$this->loader->add_action( 'save_post', $plugin_admin, 'quick_and_bulk_edit_save_availability' );
 
+
 		// Feed monitor
 		$this->loader->add_action( 'dicha_skroutz_feed_monitor', $plugin_admin, 'check_feed_generation_status' );
 		
