@@ -76,6 +76,11 @@ class Dicha_Skroutz_Feed_Creator {
 	private array $fields_in_cdata = [];
 
 
+	private bool $wpml_do_lang_switch = false;
+
+	private string $original_site_lang = '';
+
+
 	/**
 	 * Constructor.
 	 *
@@ -131,7 +136,27 @@ class Dicha_Skroutz_Feed_Creator {
 
 		$product_counter = 0;
 
+		// todo move to separate class and add hooks for modifications
+		if ( class_exists( 'SitePress', false ) ) {
+			global $sitepress;
+
+			if ( isset( $sitepress ) ) {
+
+				$this->original_site_lang = $sitepress->get_default_language();
+
+				if ( $this->original_site_lang != 'el' ) {
+					$sitepress->switch_lang( 'el', false );
+					$this->wpml_do_lang_switch = true;
+				}
+			}
+		}
+
 		foreach ( $skroutz_products as $product_id ) {
+
+			if ( $this->wpml_do_lang_switch ) {
+				$original_lang_product_id = $product_id;
+				$product_id = apply_filters( 'wpml_object_id', $original_lang_product_id, 'product', true, 'el' );
+			}
 
 			$product_counter ++;
 
@@ -163,6 +188,11 @@ class Dicha_Skroutz_Feed_Creator {
 				/** @var WC_Product_Simple $product */
 
 				$unique_id = $product->get_id();
+
+				if ( $this->wpml_do_lang_switch ) {
+					// maybe add with filter
+					$unique_id = $original_lang_product_id;
+				}
 
 				// gather simple product data
 				$node_data = array_merge(
@@ -223,6 +253,11 @@ class Dicha_Skroutz_Feed_Creator {
 					$unique_key           = $parent_id;
 					$group_name           = $parent_name;
 
+					if ( $this->wpml_do_lang_switch ) {
+						// maybe add with filter
+						$unique_key = $original_lang_product_id;
+					}
+
 					// var_dump( $variation->get_id() );
 					// var_dump( $variation_attributes );
 
@@ -272,6 +307,11 @@ class Dicha_Skroutz_Feed_Creator {
 							// use term_id if taxonomy exists - use value if custom (no taxonomy) attribute
 							// maybe hash $attribute_value for non taxonomies?
 							$term_id = ! is_wp_error( $attribute_term ) && $attribute_term ? $attribute_term->term_id : $attribute_value;
+
+							if ( $this->wpml_do_lang_switch ) {
+								// maybe add with filter
+								$term_id = apply_filters( 'wpml_object_id', $term_id, $attribute_slug, true, 'el' );
+							}
 
 							// Use attribute term_id to create a unique id for the variation group
 							$unique_key_parts[] = $term_id;
@@ -651,12 +691,18 @@ class Dicha_Skroutz_Feed_Creator {
 				$group_additional_images = array_merge( $group_additional_images, $variation_additional_images );
 			}
 
+			$variation_id = $variation->get_id();
+
+			if ( $this->wpml_do_lang_switch ) {
+				// maybe add with filter
+				$variation_id = apply_filters( 'wpml_object_id', $variation_id, 'product_variation', true, $this->original_site_lang );
+			}
 
 			// if no size variations, then this group has only one variation because no size grouping happens
 			// if no size groups, then don't add size_variations node, but add these data as main nodes
 			if ( ! $has_size_variations ) {
 				$variable_group_data = [
-					'id'             => apply_filters( 'dicha_skroutz_feed_custom_variation_id', $variation->get_id(), $variation, $parent_product, $this->feed_type ), // We replace group unique_id with variation ID
+					'id'             => apply_filters( 'dicha_skroutz_feed_custom_variation_id', $variation_id, $variation, $parent_product, $this->feed_type ), // We replace group unique_id with variation ID
 					'availability'   => $this->data_helper->skroutz_get_availability( $variation ),
 					'price_with_vat' => $this->data_helper->skroutz_get_price( $variation ),
 					'vat'            => $this->data_helper->skroutz_get_vat( $variation ),
@@ -666,7 +712,7 @@ class Dicha_Skroutz_Feed_Creator {
 			else {
 				// if size variations exist, then add size_variations nodes
 				$variation_nodes[] = [
-					'variationid'    => apply_filters( 'dicha_skroutz_feed_custom_variation_id', $variation->get_id(), $variation, $parent_product, $this->feed_type ),
+					'variationid'    => apply_filters( 'dicha_skroutz_feed_custom_variation_id', $variation_id, $variation, $parent_product, $this->feed_type ),
 					'availability'   => $this->data_helper->skroutz_get_availability( $variation ),
 					'size'           => $variation_size,
 					'quantity'       => apply_filters( 'dicha_skroutz_feed_custom_variation_quantity', $variation_quantity, $variation, $parent_product, $this->feed_type ),
