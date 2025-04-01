@@ -118,18 +118,18 @@ class Dicha_Skroutz_Feed_Data_Helper {
 			// Better than comparing whole string with strpos,
 			// because some attrs have small names like "S" (Small size) and won't be added if letter S exists in some random word.
 			// Search with strpos only when attribute name has more than one word.
-			$name_base_parts = preg_split( '/[\s,()]+/', $name_base, -1, PREG_SPLIT_NO_EMPTY );
+			$name_base_parts = preg_split( '/[\s,()]+/', mb_strtolower( $name_base, 'UTF-8' ), -1, PREG_SPLIT_NO_EMPTY );
 
 			foreach ( $terms_to_add as $term_objects ) {
 
 				foreach ( $term_objects as $term ) {
 
 					if ( count( explode( ' ', $term->name ) ) > 1 ) { // for multi-word names -> direct search in title
-						if ( strpos( $name_base, $term->name ) === false ) {
+						if ( stripos( $name_base, $term->name ) === false ) {
 							$term_names_to_append[] = $term->name;
 						}
 					}
-					elseif ( ! in_array( $term->name, $name_base_parts ) ) {
+					elseif ( ! in_array( mb_strtolower( $term->name, 'UTF-8' ), $name_base_parts ) ) {
 						$term_names_to_append[] = $term->name;
 					}
 				}
