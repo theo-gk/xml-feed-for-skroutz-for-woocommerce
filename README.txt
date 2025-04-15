@@ -115,6 +115,8 @@ It is optimized to run on servers with low resources and the minimum PHP memory 
 = 1.1.1 =
 *Release Date - 15 Apr 2025*
 * Improvement: Filter only main query in admin product list.
+* Compatibility: Add compatibility with all multilingual plugins for xml availability product field.
+* Compatibility: Add compatibility with WPML to use greek translations (if exist) in Skroutz XML text fields.
 
 = 1.1.0 =
 *Release Date - 31 Mar 2025*
