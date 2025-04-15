@@ -1,11 +1,11 @@
 === XML Feed for Skroutz & BestPrice for WooCommerce ===
 Contributors: dichagr, theogk
 Tags: skroutz, bestprice, xml, feed, marketplace
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 Requires at least: 5.6
 Tested up to: 6.8
 WC requires at least: 6.2.0
-WC tested up to: 9.8.0
+WC tested up to: 9.8.1
 Requires PHP: 7.4
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -112,6 +112,10 @@ It is optimized to run on servers with low resources and the minimum PHP memory 
 4. Setup the plugin settings navigating through the left main menu: Digital Challenge > Skroutz/BestPrice XML
 
 == Changelog ==
+= 1.1.1 =
+*Release Date - 15 Apr 2025*
+* Improvement: Filter only main query in admin product list.
+
 = 1.1.0 =
 *Release Date - 31 Mar 2025*
 * Feature: Send an email alert in case of an error in XML generation.

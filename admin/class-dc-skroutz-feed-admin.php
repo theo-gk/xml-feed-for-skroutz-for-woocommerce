@@ -1756,10 +1756,9 @@ class Dicha_Skroutz_Feed_Admin {
 	public function filter_by_custom_fields_query_mod( WP_Query $query ): void {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		// nonce verification is handled by WordPress in post filters, so it's not needed when using the `restrict_manage_posts` hook
-		global $pagenow;
-		global $typenow;
+		global $pagenow, $typenow;
 
-		if ( 'product' === $typenow && is_admin() && 'edit.php' === $pagenow && isset( $_GET['dicha_skroutz_availability'] ) && $_GET['dicha_skroutz_availability'] != '' ) {
+		if ( $query->is_main_query() && is_admin() && 'product' === $typenow && 'edit.php' === $pagenow && isset( $_GET['dicha_skroutz_availability'] ) && $_GET['dicha_skroutz_availability'] != '' ) {
 
 			// keep existing meta queries
 			$meta_query = (array) $query->get( 'meta_query' );
