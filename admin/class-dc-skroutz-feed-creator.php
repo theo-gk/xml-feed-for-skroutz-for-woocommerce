@@ -140,7 +140,9 @@ class Dicha_Skroutz_Feed_Creator {
 		if ( class_exists( 'SitePress', false ) ) {
 			global $sitepress;
 
-			if ( isset( $sitepress ) ) {
+			$switch_language_enabled = apply_filters( 'dicha_skroutz_feed_switch_language_enabled', true );
+
+			if ( $switch_language_enabled && isset( $sitepress ) ) {
 
 				$this->original_site_lang = $sitepress->get_default_language();
 
