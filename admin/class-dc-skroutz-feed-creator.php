@@ -110,8 +110,14 @@ class Dicha_Skroutz_Feed_Creator {
 
 		// echo '<pre>'; print_r( $this->options ); echo '</pre>';
 
+		// Add compatibility with RightPress - Pricepep - WooCommerce Dynamic Pricing, Discounts & Fees
+		add_filter( 'rp_wcdpd_request_is_product_feed', '__return_true' );
+
 		// Build product data for export
 		$this->build_product_export_data();
+
+		// Add compatibility with RightPress - Pricepep - WooCommerce Dynamic Pricing, Discounts & Fees
+		remove_filter( 'rp_wcdpd_request_is_product_feed', '__return_true' );
 
 		// Create XML and save
 		$this->saveXML();
