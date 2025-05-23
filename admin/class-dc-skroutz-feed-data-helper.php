@@ -66,10 +66,11 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 *
 	 * @param $product   WC_Product
 	 * @param $name_base string|NULL
+	 * @param $variation WC_Product_Variation|NULL
 	 *
 	 * @return string
 	 */
-	public function skroutz_get_name( WC_Product $product, ?string $name_base = NULL ): string {
+	public function skroutz_get_name( WC_Product $product, ?string $name_base = NULL, $variation = NULL ): string {
 
 		// Find default name
 		$name_base = is_string( $name_base ) ? $name_base : $product->get_name();
@@ -82,7 +83,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 		 * If this filter is used and anything else than NULL is returned, then this value will be returned immediately.
 		 * This saves time because the rest function code will not be executed at all.
 		 */
-		$pre_product_name = apply_filters( 'dicha_skroutz_feed_custom_product_name_pre', NULL, $product, $name_base, $this->feed_type );
+		$pre_product_name = apply_filters( 'dicha_skroutz_feed_custom_product_name_pre', NULL, $product, $name_base, $variation, $this->feed_type );
 
 		if ( NULL !== $pre_product_name ) {
 			return $pre_product_name;
@@ -106,9 +107,14 @@ class Dicha_Skroutz_Feed_Data_Helper {
 			// transform WC_Product_Attribute objects to WP_Term objects
 			$terms_to_add = array_map( function( $wc_attribute ) { return $wc_attribute->get_terms(); }, $attributes_to_add );
 
-			// Add support for native WooCommerce Brands
+			// Add support for custom taxonomies
 			if ( in_array( 'pa_woo__product_brand', $allowed_taxonomies_in_title ) ) {
+				// Support for native WooCommerce Brands
 				$terms_to_add = array_merge( $terms_to_add, [ 'woo__product_brand' => $this->get_wc_brands_native( $product ) ] );
+			}
+			if ( in_array( 'pa_pwb-brand', $allowed_taxonomies_in_title ) ) {
+				// Support for Perfect Brands for WooCommerce
+				$terms_to_add = array_merge( $terms_to_add, [ 'pwb-brand' => $this->get_perfect_brands_terms( $product ) ] );
 			}
 		}
 
@@ -125,7 +131,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 				foreach ( $term_objects as $term ) {
 
 					if ( count( explode( ' ', $term->name ) ) > 1 ) { // for multi-word names -> direct search in title
-						if ( stripos( $name_base, $term->name ) === false ) {
+						if ( mb_stripos( $name_base, $term->name, 0, 'UTF-8' ) === false ) {
 							$term_names_to_append[] = $term->name;
 						}
 					}
@@ -138,7 +144,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 
 		$product_name = ! empty( $term_names_to_append ) ? $name_base . ' ' . implode( ' ', $term_names_to_append ) : $name_base;
 
-		return apply_filters( 'dicha_skroutz_feed_custom_product_name', $product_name, $product, $name_base, $allowed_taxonomies_in_title, $this->feed_type );
+		return apply_filters( 'dicha_skroutz_feed_custom_product_name', $product_name, $product, $name_base, $allowed_taxonomies_in_title, $variation, $this->feed_type );
 	}
 
 
@@ -408,6 +414,10 @@ class Dicha_Skroutz_Feed_Data_Helper {
 				// Support for native WooCommerce Brands taxonomy
 				$manufacturer_name = implode( ', ', wp_list_pluck( $this->get_wc_brands_native( $product ), 'name' ) );
 			}
+			elseif ( 'pa_pwb-brand' === $manufacturer_attribute ) {
+				// Support for Perfect Brands for WooCommerce
+				$manufacturer_name = implode( ', ', wp_list_pluck( $this->get_perfect_brands_terms( $product ), 'name' ) );
+			}
 			else {
 				// Get regular attribute value
 				$manufacturer_name = $product->get_attribute( $manufacturer_attribute );
@@ -440,6 +450,26 @@ class Dicha_Skroutz_Feed_Data_Helper {
 		}
 
 		return $wc_brands;
+	}
+
+
+	/**
+	 * Retrieves the terms associated with the Perfect Brands plugin 'pwb-brand' taxonomy for a given product.
+	 *
+	 * @param WC_Product $product The WooCommerce product object.
+	 *
+	 * @return array A WP_Term[] array representing the brands associated with the product,
+	 *               or an empty array if no brands are found or there is an error.
+	 */
+	private function get_perfect_brands_terms( WC_Product $product ): array {
+
+		$brands = get_the_terms( $product->get_id(), 'pwb-brand' );
+
+		if ( empty( $brands ) || is_wp_error( $brands ) ) {
+			return [];
+		}
+
+		return $brands;
 	}
 
 
@@ -549,7 +579,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 
 				if ( ! empty( $color_names ) ) {
 					// if multiple color options exist, then keep only first for skroutz
-					$color = explode( ',', $color_names, 2 )[0];
+					$color = implode( '/', array_map( 'trim', explode( ',', $color_names, 2 ) ) );
 					break;
 				}
 			}
@@ -614,6 +644,12 @@ class Dicha_Skroutz_Feed_Data_Helper {
 					$size = explode( ',', $size_values, 2 )[0];
 					break;
 				}
+			}
+
+			// only for simple or variable products (not variations), replace empty size with "One Size"
+			// If variations have size info, this will be replaced anyway. If they haven't, they will inherit this one, which is ideal.
+			if ( empty( $size ) && wc_string_to_bool( get_option( 'dicha_skroutz_feed_size_default_one_size' ) ) ) {
+				$size = 'One Size';
 			}
 		}
 		elseif ( 'variation' === $product_type ) {

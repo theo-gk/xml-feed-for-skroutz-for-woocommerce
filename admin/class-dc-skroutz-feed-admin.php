@@ -197,7 +197,13 @@ class Dicha_Skroutz_Feed_Admin {
 			],
 			[
 				'dicha_skroutz_feed_size' => [
-					__( 'Size', 'xml-feed-for-skroutz-for-woocommerce' ),
+					__( 'Sizes for Variations', 'xml-feed-for-skroutz-for-woocommerce' ),
+					'dicha_skroutz_feed_settings_section'
+				]
+			],
+			[
+				'dicha_skroutz_feed_size_default_one_size' => [
+					__( 'Default size if missing', 'xml-feed-for-skroutz-for-woocommerce' ),
 					'dicha_skroutz_feed_settings_section'
 				]
 			],
@@ -291,7 +297,10 @@ class Dicha_Skroutz_Feed_Admin {
 		$no_input_label_for_these = [
 			'dicha_skroutz_feed_cron',
 			'dicha_skroutz_feed_enable_ean_field',
-			'dicha_skroutz_feed_description'
+			'dicha_skroutz_feed_description',
+			'dicha_skroutz_feed_size_default_one_size',
+			'dicha_skroutz_feed_include_backorders',
+			'dicha_skroutz_feed_monitor_enabled'
 		];
 
 		foreach ( $settings as $setting ) {
@@ -411,6 +420,7 @@ class Dicha_Skroutz_Feed_Admin {
 		update_option( 'dicha_skroutz_feed_manufacturer', ! empty( $_POST['dicha_skroutz_feed_manufacturer'] ) ? wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_manufacturer'] ) ) : [], false );
 		update_option( 'dicha_skroutz_feed_color', ! empty( $_POST['dicha_skroutz_feed_color'] ) ? wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_color'] ) ) : [], false );
 		update_option( 'dicha_skroutz_feed_size', ! empty( $_POST['dicha_skroutz_feed_size'] ) ? wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_size'] ) ) : [], false );
+		update_option( 'dicha_skroutz_feed_size_default_one_size', wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_size_default_one_size'] ?? '' ) ), false );
 		update_option( 'dicha_skroutz_feed_availability', wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_availability'] ?? '' ) ), false );
 		update_option( 'dicha_skroutz_feed_include_backorders', wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_include_backorders'] ?? '' ) ), false );
 		update_option( 'dicha_skroutz_feed_title_attributes', ! empty( $_POST['dicha_skroutz_feed_title_attributes'] ) ? wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_title_attributes'] ) ) : [], false );
@@ -722,8 +732,11 @@ class Dicha_Skroutz_Feed_Admin {
 		$custom_brand_options = [];
 
 		if ( ! empty( $options['custom_taxonomies'] ) ) {
+			if ( isset( $options['custom_taxonomies']['pwb-brand'] ) ) {
+				$custom_brand_options['pwb-brand'] = 'Perfect Brands for WooCommerce';
+			}
 			if ( isset( $options['custom_taxonomies']['product_brand'] ) ) {
-				$custom_brand_options['woo__product_brand'] = __( 'WooCommerce Brands', 'xml-feed-for-skroutz-for-woocommerce' );
+				$custom_brand_options['woo__product_brand'] = 'WooCommerce Brands';
 			}
 			// maybe add support for other brands plugins here...
 		}
@@ -792,6 +805,24 @@ class Dicha_Skroutz_Feed_Admin {
 				<?php endforeach; ?>
 			</optgroup>
 		</select>
+		<p class="desc">
+			<?php echo wp_kses_post( __( 'Select only the size attributes that will create size variations, <u><strong>not</strong></u> all sizes. This depends on Skroutz <a href="https://partnersupport.skroutz.gr/hc/en-us/sections/34841019047057-Technical-Specifications-by-Category" target="_blank">Technical Specifications by Category</a>.', 'xml-feed-for-skroutz-for-woocommerce' ) ); ?>
+		</p>
+		<?php
+	}
+
+
+	/**
+	 * Prints the HTML for the default size field in the settings.
+	 */
+	function dicha_skroutz_feed_size_default_one_size_callback(): void {
+
+		$dicha_skroutz_feed_size_default_one_size = get_option( 'dicha_skroutz_feed_size_default_one_size', 'no' );
+		?>
+		<label for="dicha_skroutz_feed_size_default_one_size">
+			<input type="checkbox" id="dicha_skroutz_feed_size_default_one_size" name="dicha_skroutz_feed_size_default_one_size" value="yes"<?php checked( 'yes', $dicha_skroutz_feed_size_default_one_size ); ?>>
+			<?php esc_html_e( 'Show "One Size" for products that are missing size information.', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
+		</label>
 		<?php
 	}
 
@@ -828,7 +859,7 @@ class Dicha_Skroutz_Feed_Admin {
 		?>
 		<label for="dicha_skroutz_feed_include_backorders">
 			<input type="checkbox" id="dicha_skroutz_feed_include_backorders" name="dicha_skroutz_feed_include_backorders" value="yes"<?php checked( 'yes', $dicha_skroutz_feed_include_backorders ); ?>>
-			<?php esc_html_e( 'Include products on backorder in XML', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
+			<?php esc_html_e( 'Include products on backorder in XML.', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
 		</label>
 		<?php
 	}
@@ -844,8 +875,11 @@ class Dicha_Skroutz_Feed_Admin {
 		$custom_taxonomy_options = [];
 
 		if ( ! empty( $options['custom_taxonomies'] ) ) {
+			if ( isset( $options['custom_taxonomies']['pwb-brand'] ) ) {
+				$custom_taxonomy_options['pwb-brand'] = 'Perfect Brands for WooCommerce';
+			}
 			if ( isset( $options['custom_taxonomies']['product_brand'] ) ) {
-				$custom_taxonomy_options['woo__product_brand'] = __( 'WooCommerce Brands', 'xml-feed-for-skroutz-for-woocommerce' );
+				$custom_taxonomy_options['woo__product_brand'] = 'WooCommerce Brands';
 			}
 			// maybe add support for other custom taxonomies here...
 		}

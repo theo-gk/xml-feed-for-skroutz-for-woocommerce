@@ -1,11 +1,11 @@
 === XML Feed for Skroutz & BestPrice for WooCommerce ===
 Contributors: dichagr, theogk
 Tags: skroutz, bestprice, xml, feed, marketplace
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 Requires at least: 5.6
-Tested up to: 6.8
+Tested up to: 6.8.1
 WC requires at least: 6.2.0
-WC tested up to: 9.8.1
+WC tested up to: 9.9
 Requires PHP: 7.4
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -33,6 +33,7 @@ This plugin will help you to easily pass the strict and challenging Skroutz XML 
 - Choose between long and short descriptions for product display. If one description is empty, the other is used as fallback.
 - Use the new native WooCommerce v9.2+ field for EAN/Barcode, or let this plugin create a new custom field for you.
 - Select multiple attributes for manufacturer, color, and size fields.
+- Select a Manufacturer from a product attribute, or native "WooCommerce Brands", or even 3rd-party plugins like "Perfect Brands for WooCommerce" (by quadlayers). If no manufacturer info exists on a product, a default value "OEM" will be used to comply with Skroutz requirements.
 - Skroutz availability management at global level, and at the product/variation level.
 - Select the attributes to include in the product name from the plugin settings.
 - Add a fixed shipping rate.
@@ -63,8 +64,13 @@ This plugin will help you to easily pass the strict and challenging Skroutz XML 
 
 == Frequently Asked Questions ==
 
+ = The automatic XML generation is not working. What am I doing wrong? =
+ If you've enabled WP_Cron functionality from the plugin settings, please note that this method can be unreliable for automatic XML generation, especially for larger eshops. The way WordPress works, WP_Cron depends on website traffic to trigger scheduled tasks and may not run consistently on busy or low-traffic sites. It is generally recommended only for stores with a small number of products.
+ If your store has thousands of products, we highly recommend setting up a real server cron job via your hosting control panel (such as Plesk, cPanel, or similar platforms). Server cron jobs provide reliable and timely execution regardless of site traffic and are much better suited for handling large XML feed generation tasks.
+ Please refer to the [Documentation for Developers](https://doc.clickup.com/2582906/p/h/2eubu-58615/d0b94a4b2c5331e/2eubu-58695) for details on configuring a server cron job.
+
  = I found a bug or something doesn't work. How can I get support? =
-You can post you problem in the [official support forum](https://wordpress.org/support/plugin/xml-feed-for-skroutz-for-woocommerce/), describing your problem with as much details as possible, and maybe incude some error logs, or screenshots of the problem.
+You can post your problem in the [official support forum](https://wordpress.org/support/plugin/xml-feed-for-skroutz-for-woocommerce/), describing your problem with as much details as possible. Please include some error logs, or screenshots of the problem to make the process faster.
 Please wait patiently until you receive our free support for this free plugin. We try to reply as soon as possible, but it can take some days in some occasions.
 
  = If it's so good, why it's free? =
@@ -101,7 +107,8 @@ Yes, you can enable the XML monitor and enter your email in the appropriate fiel
 
  = What are the system requirements for using this plugin? =
 The plugin requires WooCommerce 6.2.0 or later and WordPress 5.6 or later.
-It is optimized to run on servers with low resources and the minimum PHP memory officially required is 256MB, but it can run with even lower memory for small-sized eshops. The recommended memory for optimal performance is 512MB-1024MB+.
+The recommended available PHP memory for optimal performance is 512MB-1024MB+.
+It is optimized to run on servers with low resources and the minimum PHP memory officially required is 256MB, but it can run with even lower memory for small-sized eshops.
 
 == Installation ==
 
@@ -112,6 +119,12 @@ It is optimized to run on servers with low resources and the minimum PHP memory 
 4. Setup the plugin settings navigating through the left main menu: Digital Challenge > Skroutz/BestPrice XML
 
 == Changelog ==
+= 1.1.2 =
+*Release Date - 23 May 2025*
+* Feature: Add option to add "One Size" to Skroutz <size> field, if product has no size information.
+* Compatibility: Add compatibility with Perfect Brands for WooCommerce plugin for the manufacturer field.
+* Improvement: Improve settings labels and instructions.
+
 = 1.1.1 =
 *Release Date - 15 Apr 2025*
 * Improvement: Filter only main query in admin product list.

@@ -336,7 +336,7 @@ class Dicha_Skroutz_Feed_Creator {
 					if ( ! isset( $variations_groups[ $unique_key ] ) ) {
 						$variations_groups[ $unique_key ] = [
 							'unique_id'        => $unique_key,
-							'group_name'       => $this->data_helper->skroutz_get_name( $product, $group_name ),
+							'group_name'       => $this->data_helper->skroutz_get_name( $product, $group_name, $variation ),
 							'group_variations' => [ $variation ]
 						];
 					}
@@ -766,11 +766,12 @@ class Dicha_Skroutz_Feed_Creator {
 			$variable_group_data['additional_imageurl'] = $group_additional_images;
 		}
 
-		// if size or color empty, then don't add in array, to keep original parent data
+		// if color empty, then don't add in array, to keep original parent data
 		if ( ! empty( $group_color ) ) {
 			$variable_group_data['color'] = $group_color;
 		}
 
+		// if size empty, then don't add in array, to keep original parent data
 		if ( ! empty( $group_sizes ) ) {
 			$variable_group_data['size'] = implode( ',', $group_sizes );
 		}
