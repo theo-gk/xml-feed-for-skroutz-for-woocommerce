@@ -210,6 +210,8 @@ class Dicha_Skroutz_Feed_Creator {
 
 				$data_contain_no_errors = $this->detect_data_errors( $node_data );
 
+				$node_data = apply_filters( 'dicha_skroutz_feed_custom_node_data', $node_data, $product, [], $this->feed_type );
+
 				if ( $data_contain_no_errors ) {
 					$this->products_for_export[ $unique_id ] = $node_data;
 				}
@@ -374,6 +376,8 @@ class Dicha_Skroutz_Feed_Creator {
 
 						// check if errors exist
 						$data_contain_no_errors = $this->detect_data_errors( $node_data );
+
+						$node_data = apply_filters( 'dicha_skroutz_feed_custom_node_data', $node_data, $product, $variations_group, $this->feed_type );
 
 						if ( $data_contain_no_errors ) {
 							$this->products_for_export[ $variations_group['unique_id'] ] = $node_data;
