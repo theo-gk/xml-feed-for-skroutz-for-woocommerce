@@ -124,6 +124,7 @@ It is optimized to run on servers with low resources and the minimum PHP memory 
 * Feature: Add option to add "One Size" to Skroutz <size> field, if product has no size information.
 * Compatibility: Add compatibility with Perfect Brands for WooCommerce plugin for the manufacturer field.
 * Improvement: Improve settings labels and instructions.
+* Improvement: Improve the calculation of ean/barcode field.
 
 = 1.1.1 =
 *Release Date - 15 Apr 2025*

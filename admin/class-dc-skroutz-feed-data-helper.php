@@ -322,7 +322,8 @@ class Dicha_Skroutz_Feed_Data_Helper {
 		if ( wc_string_to_bool( $dicha_skroutz_feed_enable_ean_field ) ) {
 			$ean = $product->get_meta( 'dicha_skroutz_feed_ean_barcode' );
 		}
-		elseif ( method_exists( $product, 'get_global_unique_id' ) ) {
+
+		if ( empty( $ean ) && method_exists( $product, 'get_global_unique_id' ) ) {
 			$ean = $product->get_global_unique_id();
 		}
 
