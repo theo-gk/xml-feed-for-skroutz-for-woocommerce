@@ -1145,7 +1145,7 @@ class Dicha_Skroutz_Feed_Creator {
 		$dom                     = new DOMDocument( "1.0" );
 		$dom->preserveWhiteSpace = false;
 		$dom->formatOutput       = apply_filters( 'dicha_skroutz_feed_format_output', true, $this->feed_type );
-		$dom->loadXML( $xml_data->asXML() );
+		$dom->loadXML( $xml_data->asXML(), LIBXML_PARSEHUGE );
 
 		// Include the required files for WP_Filesystem
 		if ( ! function_exists( 'WP_Filesystem' ) ) {
