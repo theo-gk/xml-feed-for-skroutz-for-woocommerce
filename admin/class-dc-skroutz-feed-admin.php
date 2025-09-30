@@ -1229,12 +1229,15 @@ class Dicha_Skroutz_Feed_Admin {
 		 * Change only display labels if you need to (because Skroutz changed its XML requirements).
 		 * Texts for admin interface are translatable, BUT texts for XML are NOT. XML texts are always in greek, just like Skroutz requires.
 		 */
-		$options = [
-			'1' => $for_admin ? __( 'Available', 'xml-feed-for-skroutz-for-woocommerce' ) : 'Άμεσα διαθέσιμο',
-			'2' => $for_admin ? __( 'Available from 1 to 3 days', 'xml-feed-for-skroutz-for-woocommerce' ) : 'Διαθέσιμο από 1 έως 3 ημέρες',
-			'3' => $for_admin ? __( 'Available from 4 to 10 days', 'xml-feed-for-skroutz-for-woocommerce' ) : 'Διαθέσιμο από 4 έως 10 ημέρες',
-			'4' => $for_admin ? __( 'Available up to 30 days', 'xml-feed-for-skroutz-for-woocommerce' ) : 'Διαθέσιμο από 10 έως 30 ημέρες',
-			'5' => $for_admin ? __( 'Hide from XML', 'xml-feed-for-skroutz-for-woocommerce' ) : 'Απόκρυψη από το XML'
+		$deprecated = __( 'Deprecated', 'xml-feed-for-skroutz-for-woocommerce' );
+		$options    = [
+			'1'   => $for_admin ? __( 'Available', 'xml-feed-for-skroutz-for-woocommerce' ) : 'Άμεσα διαθέσιμο',
+			'2'   => $for_admin ? __( 'Available from 1 to 3 days', 'xml-feed-for-skroutz-for-woocommerce' ) : 'Διαθέσιμο από 1 έως 3 ημέρες',
+			'2.5' => $for_admin ? __( 'Available from 4 to 6 days', 'xml-feed-for-skroutz-for-woocommerce' ) : 'Διαθέσιμο από 4 έως 6 ημέρες',
+			'3'   => $for_admin ? __( 'Available from 4 to 10 days', 'xml-feed-for-skroutz-for-woocommerce' ) . " ($deprecated)" : 'Διαθέσιμο από 4 έως 10 ημέρες',
+			'3.5' => $for_admin ? __( 'Available up to 12 days', 'xml-feed-for-skroutz-for-woocommerce' ) : 'Διαθέσιμο από 7 έως 12 ημέρες',
+			'4'   => $for_admin ? __( 'Available up to 30 days', 'xml-feed-for-skroutz-for-woocommerce' ) . " ($deprecated)" : 'Διαθέσιμο από 10 έως 30 ημέρες',
+			'5'   => $for_admin ? __( 'Hide from XML', 'xml-feed-for-skroutz-for-woocommerce' ) : 'Απόκρυψη από το XML'
 		];
 
 		if ( $include_default ) {

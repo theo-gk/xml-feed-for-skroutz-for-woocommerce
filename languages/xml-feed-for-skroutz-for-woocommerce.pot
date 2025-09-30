@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: XML Feed for Skroutz for WooCommerce\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-23 07:03+0000\n"
+"POT-Creation-Date: 2025-09-30 21:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -39,7 +39,7 @@ msgid ""
 "under WooCommerce SKU field."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1479
+#: admin/class-dc-skroutz-feed-admin.php:1482
 #, php-format
 msgid "Alert about Skroutz XML generation at %1$s (%2$s)"
 msgstr ""
@@ -48,16 +48,20 @@ msgstr ""
 msgid "Attributes in Product name"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1233
+#: admin/class-dc-skroutz-feed-admin.php:1234
 msgid "Available"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1234
+#: admin/class-dc-skroutz-feed-admin.php:1235
 msgid "Available from 1 to 3 days"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1235
+#: admin/class-dc-skroutz-feed-admin.php:1237
 msgid "Available from 4 to 10 days"
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:1236
+msgid "Available from 4 to 6 days"
 msgstr ""
 
 #: admin/class-dc-skroutz-feed-admin.php:747
@@ -67,7 +71,11 @@ msgstr ""
 msgid "Available product attributes:"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1236
+#: admin/class-dc-skroutz-feed-admin.php:1238
+msgid "Available up to 12 days"
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:1239
 msgid "Available up to 30 days"
 msgstr ""
 
@@ -95,12 +103,16 @@ msgstr ""
 msgid "Default Availability"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1241
+#: admin/class-dc-skroutz-feed-admin.php:1244
 msgid "Default availability"
 msgstr ""
 
 #: admin/class-dc-skroutz-feed-admin.php:206
 msgid "Default size if missing"
+msgstr ""
+
+#: admin/class-dc-skroutz-feed-admin.php:1232
+msgid "Deprecated"
 msgstr ""
 
 #: admin/class-dc-skroutz-feed-admin.php:933
@@ -125,8 +137,8 @@ msgstr ""
 msgid "Documentation for Developers"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1577
-#: admin/class-dc-skroutz-feed-admin.php:1641
+#: admin/class-dc-skroutz-feed-admin.php:1580
+#: admin/class-dc-skroutz-feed-admin.php:1644
 msgid "EAN/Barcode"
 msgstr ""
 
@@ -164,7 +176,7 @@ msgstr ""
 msgid "Exclude"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1521
+#: admin/class-dc-skroutz-feed-admin.php:1524
 msgid "Export Feeds"
 msgstr ""
 
@@ -176,7 +188,7 @@ msgstr ""
 msgid "Feed generation schedule"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1765
+#: admin/class-dc-skroutz-feed-admin.php:1768
 msgid "Filter by Skroutz Availability"
 msgstr ""
 
@@ -202,7 +214,7 @@ msgid ""
 "them."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1237
+#: admin/class-dc-skroutz-feed-admin.php:1240
 msgid "Hide from XML"
 msgstr ""
 
@@ -294,7 +306,7 @@ msgstr ""
 msgid "Plugin's Homepage"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1494
+#: admin/class-dc-skroutz-feed-admin.php:1497
 #, php-format
 msgid ""
 "Possible error in Skroutz XML generation process. Last time generated: %s"
@@ -327,7 +339,7 @@ msgid ""
 "generation using WP Cron scheduling."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1921
+#: admin/class-dc-skroutz-feed-admin.php:1924
 msgid "Settings"
 msgstr ""
 
@@ -367,18 +379,18 @@ msgstr ""
 msgid "Sizes for Variations"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1721
-#: admin/class-dc-skroutz-feed-admin.php:1823
-#: admin/class-dc-skroutz-feed-admin.php:1848
+#: admin/class-dc-skroutz-feed-admin.php:1724
+#: admin/class-dc-skroutz-feed-admin.php:1826
+#: admin/class-dc-skroutz-feed-admin.php:1851
 msgid "Skroutz availability"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1764
+#: admin/class-dc-skroutz-feed-admin.php:1767
 msgid "Skroutz availability filter"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1543
-#: admin/class-dc-skroutz-feed-admin.php:1653
+#: admin/class-dc-skroutz-feed-admin.php:1546
+#: admin/class-dc-skroutz-feed-admin.php:1656
 msgid "Skroutz/BestPrice Availability"
 msgstr ""
 
@@ -396,8 +408,8 @@ msgid ""
 "The alert is sent if the XML has not been updated for more than %s hours."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1546
-#: admin/class-dc-skroutz-feed-admin.php:1655
+#: admin/class-dc-skroutz-feed-admin.php:1549
+#: admin/class-dc-skroutz-feed-admin.php:1658
 msgid ""
 "The availability to show in XML feed for Skroutz/BestPrice. If you select "
 "the \"Default availability\" option, the default availability from the "
@@ -410,20 +422,20 @@ msgid ""
 "address."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1580
+#: admin/class-dc-skroutz-feed-admin.php:1583
 msgid ""
 "The product's official EAN code or Barcode. A unique EAN/Barcode is "
 "allocated to each separate retail product."
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1497
+#: admin/class-dc-skroutz-feed-admin.php:1500
 #, php-format
 msgid ""
 "The Skroutz XML file generation was successful and is back on schedule. Last "
 "time generated: %s"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1644
+#: admin/class-dc-skroutz-feed-admin.php:1647
 msgid ""
 "The variation's official EAN code or Barcode. A unique EAN/Barcode is "
 "allocated to each separate retail product."
@@ -496,6 +508,6 @@ msgstr ""
 msgid "Δείτε όλα τα plugins της Digital Challenge"
 msgstr ""
 
-#: admin/class-dc-skroutz-feed-admin.php:1851
+#: admin/class-dc-skroutz-feed-admin.php:1854
 msgid "— No Change —"
 msgstr ""
