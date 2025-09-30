@@ -232,6 +232,12 @@ class Dicha_Skroutz_Feed_Admin {
 				]
 			],
 			[
+				'dicha_skroutz_feed_global_markup' => [
+					__( 'Global Price Increase (%)', 'xml-feed-for-skroutz-for-woocommerce' ),
+					'dicha_skroutz_feed_settings_section'
+				]
+			],
+			[
 				'dicha_skroutz_feed_enable_ean_field' => [
 					__( 'EAN/Barcode field', 'xml-feed-for-skroutz-for-woocommerce' ),
 					'dicha_skroutz_feed_settings_section'
@@ -425,6 +431,7 @@ class Dicha_Skroutz_Feed_Admin {
 		update_option( 'dicha_skroutz_feed_include_backorders', wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_include_backorders'] ?? '' ) ), false );
 		update_option( 'dicha_skroutz_feed_title_attributes', ! empty( $_POST['dicha_skroutz_feed_title_attributes'] ) ? wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_title_attributes'] ) ) : [], false );
 		update_option( 'dicha_skroutz_feed_description', wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_description'] ?? '' ) ), false );
+		update_option( 'dicha_skroutz_feed_global_markup', wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_global_markup'] ?? '' ) ), false );
 		update_option( 'dicha_skroutz_feed_enable_ean_field', wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_enable_ean_field'] ?? '' ) ), false );
 		update_option( 'dicha_skroutz_feed_filter_categories', ! empty( $_POST['dicha_skroutz_feed_filter_categories'] ) ? wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_filter_categories'] ) ) : [], false );
 		update_option( 'dicha_skroutz_feed_filter_tags', ! empty( $_POST['dicha_skroutz_feed_filter_tags'] ) ? wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_filter_tags'] ) ) : [], false );
@@ -932,6 +939,25 @@ class Dicha_Skroutz_Feed_Admin {
 		<label for="dicha_skroutz_feed_description_long">
 			<?php esc_html_e( 'Description', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
 		</label>
+		<?php
+	}
+
+
+	/**
+	 * Prints the HTML for the global markup field in the settings.
+	 */
+	function dicha_skroutz_feed_global_markup_callback(): void {
+
+		$dicha_skroutz_feed_global_markup = get_option( 'dicha_skroutz_feed_global_markup', '' );
+		?>
+		<!--suppress HtmlFormInputWithoutLabel -->
+		<input id="dicha_skroutz_feed_global_markup" name="dicha_skroutz_feed_global_markup" type="number"
+		       min="0" step="0.01" value="<?php echo esc_attr( $dicha_skroutz_feed_global_markup ); ?>" />
+		<p class="desc">
+			<?php esc_html_e( 'The product prices in the XML feed will be increased by this percentage.', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
+			<br>
+			<?php esc_html_e( 'Note: The products with an assigned "Skroutz Price" in their product data will not be affected by this increase.', 'xml-feed-for-skroutz-for-woocommerce' ); ?>
+		</p>
 		<?php
 	}
 
@@ -1586,7 +1612,24 @@ class Dicha_Skroutz_Feed_Admin {
 
 
 	/**
-	 * Save product custom fields
+	 * Add a custom field for Skroutz Price in the product data metabox.
+	 * This field defines the price that will appear in the Skroutz feed.
+	 */
+	function add_skroutz_price_field(): void {
+
+		woocommerce_wp_text_input( [
+			'id'          => 'dicha_skroutz_feed_price',
+			'value'       => wc_format_localized_price( get_post_meta( get_the_ID(), 'dicha_skroutz_feed_price', true ) ),
+			'data_type'   => 'price',
+			'label'       => __( 'Skroutz Price', 'xml-feed-for-skroutz-for-woocommerce' ) . ' (' . get_woocommerce_currency_symbol() . ')',
+			'desc_tip'    => true,
+			'description' => __( 'This price will be the product price in the Skroutz feed.', 'xml-feed-for-skroutz-for-woocommerce' )
+		] );
+	}
+
+
+	/**
+	 * Save product skroutz fields
 	 *
 	 * @param int $post_id WP post id.
 	 */
@@ -1597,82 +1640,105 @@ class Dicha_Skroutz_Feed_Admin {
 		}
 
 		// Save EAN field only if enabled from global settings
-		$default_ean_enabled = version_compare( $this->woo_version, '9.2', '>=' ) ? 'no' : 'yes';
+		$default_ean_enabled                 = version_compare( $this->woo_version, '9.2', '>=' ) ? 'no' : 'yes';
 		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', $default_ean_enabled );
 
 		if ( wc_string_to_bool( $dicha_skroutz_feed_enable_ean_field ) ) {
 
-			$dicha_skroutz_feed_ean_barcode = sanitize_text_field( wp_unslash( $_POST['dicha_skroutz_feed_ean_barcode'] ?? '' ) );
+			$dicha_skroutz_feed_ean_barcode = wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_ean_barcode'] ?? '' ) );
 
 			if ( ! empty( $dicha_skroutz_feed_ean_barcode ) ) {
-				update_post_meta( $post_id, 'dicha_skroutz_feed_ean_barcode', wc_clean( $dicha_skroutz_feed_ean_barcode ) );
+				update_post_meta( $post_id, 'dicha_skroutz_feed_ean_barcode', $dicha_skroutz_feed_ean_barcode );
 			}
 			else {
 				delete_post_meta( $post_id, 'dicha_skroutz_feed_ean_barcode' );
 			}
 		}
 
-		$dicha_skroutz_feed_custom_availability = sanitize_text_field( wp_unslash( $_POST['dicha_skroutz_feed_custom_availability'] ?? '' ) );
+		
+		$dicha_skroutz_feed_custom_availability = wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_custom_availability'] ?? '' ) );
 
 		if ( ! empty( $dicha_skroutz_feed_custom_availability ) ) {
-			update_post_meta( $post_id, 'dicha_skroutz_feed_custom_availability', wc_clean( $dicha_skroutz_feed_custom_availability ) );
+			update_post_meta( $post_id, 'dicha_skroutz_feed_custom_availability', $dicha_skroutz_feed_custom_availability );
 		}
 		else {
 			delete_post_meta( $post_id, 'dicha_skroutz_feed_custom_availability' );
+		}
+
+		
+		$dicha_skroutz_feed_price = wc_clean( wp_unslash( $_POST['dicha_skroutz_feed_price'] ?? '' ) );
+
+		if ( ! empty( $dicha_skroutz_feed_price ) ) {
+			update_post_meta( $post_id, 'dicha_skroutz_feed_price', (float) wc_format_decimal( $dicha_skroutz_feed_price ) );
+		}
+		else {
+			delete_post_meta( $post_id, 'dicha_skroutz_feed_price' );
 		}
 	}
 
 
 	/**
-	 * Setup custom fields in product variations
+	 * Add skroutz fields in product variations
 	 *
 	 * @param int     $loop           Position in the loop.
 	 * @param array   $variation_data Variation data.
 	 * @param WP_Post $variation      Post data.
 	 */
-	function print_variation_custom_fields( int $loop, array $variation_data, WP_Post $variation ): void {
+	function print_variation_skroutz_fields( int $loop, array $variation_data, WP_Post $variation ): void {
 
-		$default_ean_enabled = version_compare( $this->woo_version, '9.2', '>=' ) ? 'no' : 'yes';
+		$default_ean_enabled                 = version_compare( $this->woo_version, '9.2', '>=' ) ? 'no' : 'yes';
 		$dicha_skroutz_feed_enable_ean_field = get_option( 'dicha_skroutz_feed_enable_ean_field', $default_ean_enabled );
+
+		echo '<div>';
+
+		woocommerce_wp_select( [
+			'id'            => "variable_dicha_skroutz_feed_custom_availability_$loop",
+			'name'          => "variable_dicha_skroutz_feed_custom_availability[$loop]",
+			'label'         => __( 'Skroutz/BestPrice Availability', 'xml-feed-for-skroutz-for-woocommerce' ),
+			'desc_tip'      => true,
+			'description'   => __( 'The availability to show in XML feed for Skroutz/BestPrice. If you select the "Default availability" option, the default availability from the plugin\'s settings will be used.', 'xml-feed-for-skroutz-for-woocommerce' ),
+			'options'       => self::skroutz_get_availability_options( true, true ),
+			'value'         => get_post_meta( $variation->ID, 'dicha_skroutz_feed_custom_availability', true ),
+			'wrapper_class' => 'form-row form-row-first',
+		] );
+
+		woocommerce_wp_text_input( [
+			'id'            => "variable_dicha_skroutz_feed_price_$loop",
+			'name'          => "variable_dicha_skroutz_feed_price[$loop]",
+			'value'         => wc_format_localized_price( get_post_meta( $variation->ID, 'dicha_skroutz_feed_price', true ) ),
+			'data_type'     => 'price',
+			'label'         => __( 'Skroutz Price', 'xml-feed-for-skroutz-for-woocommerce' ),
+			'desc_tip'      => true,
+			'description'   => __( 'This price will be the variation price in the Skroutz feed.', 'xml-feed-for-skroutz-for-woocommerce' ),
+			'wrapper_class' => 'form-row form-row-last',
+		] );
 
 		if ( wc_string_to_bool( $dicha_skroutz_feed_enable_ean_field ) ) {
 
-			echo '<div class="form-row form-row-full">';
 			woocommerce_wp_text_input( [
-				'id'          => "variable_dicha_skroutz_feed_ean_barcode_$loop",
-				'name'        => "variable_dicha_skroutz_feed_ean_barcode[$loop]",
-				'label'       => __( 'EAN/Barcode', 'xml-feed-for-skroutz-for-woocommerce' ),
-				'desc_tip'    => true,
-				'value'       => get_post_meta( $variation->ID, 'dicha_skroutz_feed_ean_barcode', true ),
-				'description' => __( 'The variation\'s official EAN code or Barcode. A unique EAN/Barcode is allocated to each separate retail product.', 'xml-feed-for-skroutz-for-woocommerce' )
+				'id'            => "variable_dicha_skroutz_feed_ean_barcode_$loop",
+				'name'          => "variable_dicha_skroutz_feed_ean_barcode[$loop]",
+				'label'         => __( 'EAN/Barcode', 'xml-feed-for-skroutz-for-woocommerce' ),
+				'desc_tip'      => true,
+				'value'         => get_post_meta( $variation->ID, 'dicha_skroutz_feed_ean_barcode', true ),
+				'description'   => __( 'The variation\'s official EAN code or Barcode. A unique EAN/Barcode is allocated to each separate retail product.', 'xml-feed-for-skroutz-for-woocommerce' ),
+				'wrapper_class' => 'form-row form-row-form-row-full',
 			] );
-			echo '</div>';
 		}
 
-		echo '<div class="form-row form-row-full">';
-		woocommerce_wp_select( [
-			'id'          => "variable_dicha_skroutz_feed_custom_availability_$loop",
-			'name'        => "variable_dicha_skroutz_feed_custom_availability[$loop]",
-			'label'       => __( 'Skroutz/BestPrice Availability', 'xml-feed-for-skroutz-for-woocommerce' ),
-			'desc_tip'    => true,
-			'description' => __( 'The availability to show in XML feed for Skroutz/BestPrice. If you select the "Default availability" option, the default availability from the plugin\'s settings will be used.', 'xml-feed-for-skroutz-for-woocommerce' ),
-			'options'     => self::skroutz_get_availability_options( true, true ),
-			'value'       => get_post_meta( $variation->ID, 'dicha_skroutz_feed_custom_availability', true ),
-		] );
+		echo '</div>';
 
 		wp_nonce_field( 'dicha_skroutz_save_variation_fields', 'dicha_skroutz_save_variation_fields_nonce' );
-
-		echo '</div>';
 	}
 
 
 	/**
-	 * Save custom fields in variations.
+	 * Save skroutz fields in variations.
 	 *
 	 * @param int $variation_id
 	 * @param int $i
 	 */
-	function save_variation_custom_fields( int $variation_id, int $i ): void {
+	function save_variation_skroutz_fields( int $variation_id, int $i ): void {
 
 		if ( empty( $_POST['dicha_skroutz_save_variation_fields_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['dicha_skroutz_save_variation_fields_nonce'] ) ), 'dicha_skroutz_save_variation_fields' ) ) {
 			return;
@@ -1684,7 +1750,7 @@ class Dicha_Skroutz_Feed_Admin {
 
 		if ( wc_string_to_bool( $dicha_skroutz_feed_enable_ean_field ) ) {
 
-			$dicha_skroutz_feed_ean_barcode = sanitize_text_field( wp_unslash( $_POST['variable_dicha_skroutz_feed_ean_barcode'][ $i ] ?? '' ) );
+			$dicha_skroutz_feed_ean_barcode = wc_clean( wp_unslash( $_POST['variable_dicha_skroutz_feed_ean_barcode'][ $i ] ?? '' ) );
 
 			if ( ! empty( $dicha_skroutz_feed_ean_barcode ) ) {
 				update_post_meta( $variation_id, 'dicha_skroutz_feed_ean_barcode', $dicha_skroutz_feed_ean_barcode );
@@ -1694,13 +1760,23 @@ class Dicha_Skroutz_Feed_Admin {
 			}
 		}
 
-		$custom_availability = sanitize_text_field( wp_unslash( $_POST['variable_dicha_skroutz_feed_custom_availability'][ $i ] ?? '' ) );
+		$custom_availability = wc_clean( wp_unslash( $_POST['variable_dicha_skroutz_feed_custom_availability'][ $i ] ?? '' ) );
 
 		if ( ! empty( $custom_availability ) ) {
 			update_post_meta( $variation_id, 'dicha_skroutz_feed_custom_availability', $custom_availability );
 		}
 		else {
 			delete_post_meta( $variation_id, 'dicha_skroutz_feed_custom_availability' );
+		}
+
+
+		$dicha_skroutz_feed_price = wc_clean( wp_unslash( $_POST['variable_dicha_skroutz_feed_price'][ $i ] ?? '' ) );
+
+		if ( ! empty( $dicha_skroutz_feed_price ) ) {
+			update_post_meta( $variation_id, 'dicha_skroutz_feed_price', (float) wc_format_decimal( $dicha_skroutz_feed_price ) );
+		}
+		else {
+			delete_post_meta( $variation_id, 'dicha_skroutz_feed_price' );
 		}
 	}
 

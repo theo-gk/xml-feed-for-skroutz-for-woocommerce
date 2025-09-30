@@ -132,9 +132,11 @@ class Dicha_Skroutz_Feed {
 		$this->loader->add_filter( 'woocommerce_product_data_tabs', $plugin_admin, 'register_new_exports_tab' );
 		$this->loader->add_filter( 'woocommerce_product_data_panels', $plugin_admin, 'print_exports_tab_content' );
 		$this->loader->add_action( 'woocommerce_product_options_sku', $plugin_admin, 'add_ean_field_under_sku', 50 );
+		$this->loader->add_action( 'woocommerce_product_options_pricing', $plugin_admin, 'add_skroutz_price_field', 50 );
 		$this->loader->add_action( 'woocommerce_process_product_meta', $plugin_admin, 'save_product_custom_fields' );
-		$this->loader->add_action( 'woocommerce_variation_options_dimensions', $plugin_admin, 'print_variation_custom_fields', 10, 3 );
-		$this->loader->add_action( 'woocommerce_save_product_variation', $plugin_admin, 'save_variation_custom_fields', 10, 2 );
+		$this->loader->add_action( 'woocommerce_product_after_variable_attributes', $plugin_admin, 'print_variation_skroutz_fields', 10, 3 );
+		$this->loader->add_action( 'woocommerce_save_product_variation', $plugin_admin, 'save_variation_skroutz_fields', 10, 2 );
+
 
 
 		// Product list filters and new availability column
