@@ -356,11 +356,22 @@ class Dicha_Skroutz_Feed_Data_Helper {
 	 */
 	public function skroutz_get_price( WC_Product $product ) {
 
-		$price_incl_tax = wc_get_price_including_tax( $product );
+		$global_markup         = $this->options['global_markup'];
+		$product_skroutz_price = max( 0.0, $product->get_meta( 'dicha_skroutz_feed_price' ) );
 
-		$price = apply_filters( 'dicha_skroutz_feed_custom_price', $price_incl_tax, $product, $this->feed_type );
+		if ( ! empty( $product_skroutz_price ) ) {
+			$price_incl_tax = wc_get_price_including_tax( $product, [ 'price' => $product_skroutz_price ] );
+		}
+		elseif ( ! empty( $global_markup ) ) {
+			$price_incl_tax = wc_get_price_including_tax( $product ) * ( 1 + $global_markup / 100 );
+		}
+		else {
+			$price_incl_tax = wc_get_price_including_tax( $product );
+		}
 
-		if ( empty( $price ) ) {
+		$price = apply_filters( 'dicha_skroutz_feed_custom_price', $price_incl_tax, $product, $this->feed_type, $global_markup );
+
+		if ( empty( $price ) || $price < 0 ) {
 			return new WP_Error( '30', 'Η τιμή προϊόντος πρέπει να είναι μεγαλύτερη του 0.' );
 		}
 

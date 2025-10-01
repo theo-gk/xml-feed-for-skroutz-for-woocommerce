@@ -75,9 +75,18 @@ class Dicha_Skroutz_Feed_Creator {
 	 */
 	private array $fields_in_cdata = [];
 
-
+	/**
+	 * If a language switch is active.
+	 *
+	 * @var bool
+	 */
 	private bool $wpml_do_lang_switch = false;
 
+	/**
+	 * The original language of the site.
+	 *
+	 * @var string
+	 */
 	private string $original_site_lang = '';
 
 
@@ -424,6 +433,7 @@ class Dicha_Skroutz_Feed_Creator {
 			'xml_availability'          => get_option( 'dicha_skroutz_feed_availability' ),
 			'include_backorders'        => get_option( 'dicha_skroutz_feed_include_backorders' ),
 			'description'               => get_option( 'dicha_skroutz_feed_description', 'short' ),
+			'global_markup'             => get_option( 'dicha_skroutz_feed_global_markup', '' ),
 			'flat_rate'                 => get_option( 'dicha_skroutz_feed_shipping_cost' ),
 			'flat_rate_free'            => get_option( 'dicha_skroutz_feed_free_shipping' ),
 			'selected_cats'             => get_option( 'dicha_skroutz_feed_filter_categories', [] ),
@@ -591,6 +601,9 @@ class Dicha_Skroutz_Feed_Creator {
 			$group_sku = $this->data_helper->skroutz_get_mpn( $parent_product );
 		}
 
+		// if variations have "skroutz price" (triggers parent price recalculation in the end)
+		$variations_have_skroutz_price = false;
+
 		foreach ( $group_variations as $variation ) {
 
 			// Skip variation from manual filter
@@ -722,6 +735,11 @@ class Dicha_Skroutz_Feed_Creator {
 				];
 			}
 			else {
+				// detect if "skroutz price" exists at least on one group variation (sufficient to trigger parent price recalculation)
+				if (  ! $variations_have_skroutz_price && max( 0.0, $variation->get_meta( 'dicha_skroutz_feed_price' ) ) > 0 ) {
+					$variations_have_skroutz_price = true;
+				}
+
 				// if size variations exist, then add size_variations nodes
 				$variation_nodes[] = [
 					'variationid'    => apply_filters( 'dicha_skroutz_feed_custom_variation_id', $variation_id, $variation, $parent_product, $this->feed_type ),
@@ -802,6 +820,11 @@ class Dicha_Skroutz_Feed_Creator {
 			// if variation nodes still exist, add them to XML
 			if ( ! empty( $variation_nodes ) ) {
 				$variable_group_data['variations'] = $variation_nodes;
+
+				// also recalculate group price if variations have "skroutz price"
+				if ( $variations_have_skroutz_price ) {
+					$variable_group_data['price_with_vat'] = min( array_column( $variation_nodes, 'price_with_vat' ) );
+				}
 			}
 			else {
 				// if empty, then all variations have errors -> add a WP_Error to force skipping for the parent product
@@ -1182,6 +1205,7 @@ class Dicha_Skroutz_Feed_Creator {
 		}
 
 		// Zip XML
+		// todo always create zip
 		if ( apply_filters( 'dicha_skroutz_feed_zip_xml', false, $this->feed_type ) && class_exists( 'ZipArchive' ) ) {
 
 			$zip = new ZipArchive();
