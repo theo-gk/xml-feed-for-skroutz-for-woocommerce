@@ -1,11 +1,11 @@
 === XML Feed for Skroutz & BestPrice for WooCommerce ===
 Contributors: dichagr, theogk
 Tags: skroutz, bestprice, xml, feed, marketplace
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 Requires at least: 5.6
-Tested up to: 6.8.1
+Tested up to: 6.8.3
 WC requires at least: 6.2.0
-WC tested up to: 9.9
+WC tested up to: 10.2.2
 Requires PHP: 7.4
 License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -119,6 +119,13 @@ It is optimized to run on servers with low resources and the minimum PHP memory 
 4. Setup the plugin settings navigating through the left main menu: Digital Challenge > Skroutz/BestPrice XML
 
 == Changelog ==
+= 1.2.0 =
+*Release Date - 1 Oct 2025*
+* Feature: New settings field to set a global price increase to all products.
+* Feature: New product field to set a custom product "Skroutz Price" just for your feeds.
+* Improvement: Better handling of huge XML files.
+* Compatibility: Checked with the latest WordPress and WooCommerce versions.
+
 = 1.1.2 =
 *Release Date - 23 May 2025*
 * Feature: Add option to add "One Size" to Skroutz <size> field, if product has no size information.
