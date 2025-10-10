@@ -1,7 +1,7 @@
 === XML Feed for Skroutz & BestPrice for WooCommerce ===
 Contributors: dichagr, theogk
 Tags: skroutz, bestprice, xml, feed, marketplace
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 Requires at least: 5.6
 Tested up to: 6.8.3
 WC requires at least: 6.2.0
@@ -30,6 +30,8 @@ This plugin will help you to easily pass the strict and challenging Skroutz XML 
 - Full support for product variations with the new format required for Skroutz marketplace. Variations are grouped by size attributes. "Non-size" variations like color etc. appear in the feed as separate products, as per Skroutz requirements.
 - Exclude or include products in the feed based on category, and/or tag from the plugin settings. If you need more control, there is a developer-friendly way to include/exclude products programmatically.
 - Hide out of stock products from the feed, or products on backorder.
+- NEW: Set a global price increase that will modify all product prices in the XML feed.
+- NEW: Set a custom "Skroutz price" per product or variation that will be used instead of the regular price in the XML feed.
 - Choose between long and short descriptions for product display. If one description is empty, the other is used as fallback.
 - Use the new native WooCommerce v9.2+ field for EAN/Barcode, or let this plugin create a new custom field for you.
 - Select multiple attributes for manufacturer, color, and size fields.
@@ -87,6 +89,10 @@ Yes, the plugin adheres to all requirements and specifications of Skroutz.gr and
  = Does the plugin support product variations? =
 Yes, the plugin supports variations! Variations are grouped by size attributes. "Non-size" variations like color etc. appear in the feed as separate products, as per Skroutz requirements.
 
+ = Can I set a custom price in the XML feed that will be different from the price in my eshop? =
+Yes, you have two options. You can set a global price increase (percentage) that will modify all product prices in the XML feed.
+Or you can set a custom "Skroutz price" per product or variation that will be used instead of the regular price in the XML feed.
+
  = Can I exclude specific products or categories from the feed? =
 Absolutely. You can exclude or include products based on their categories and tags using the plugin settings. If you need more control, there is a developer-friendly way to include/exclude products programmatically.
 Please read the [documentation for developers](https://doc.clickup.com/2582906/p/h/2eubu-58615/d0b94a4b2c5331e/2eubu-58695) to find out how.
@@ -119,6 +125,10 @@ It is optimized to run on servers with low resources and the minimum PHP memory 
 4. Setup the plugin settings navigating through the left main menu: Digital Challenge > Skroutz/BestPrice XML
 
 == Changelog ==
+= 1.2.1 =
+*Release Date - 10 Oct 2025*
+* Fix: Fix a filter not firing when attribute inputs are empty in plugin settings.
+
 = 1.2.0 =
 *Release Date - 1 Oct 2025*
 * Feature: New settings field to set a global price increase to all products.

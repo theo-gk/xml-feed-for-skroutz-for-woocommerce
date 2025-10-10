@@ -419,27 +419,28 @@ class Dicha_Skroutz_Feed_Data_Helper {
 
 		$manufacturer = 'OEM';
 
-		if ( empty( $this->options['manufacturer'] ) || ! is_array( $this->options['manufacturer'] ) ) return $manufacturer;
+		if ( ! empty( $this->options['manufacturer'] ) && is_array( $this->options['manufacturer'] ) ) {
 
-		foreach ( $this->options['manufacturer'] as $manufacturer_attribute ) {
+			foreach ( $this->options['manufacturer'] as $manufacturer_attribute ) {
 
-			if ( 'pa_woo__product_brand' === $manufacturer_attribute ) {
-				// Support for native WooCommerce Brands taxonomy
-				$manufacturer_name = implode( ', ', wp_list_pluck( $this->get_wc_brands_native( $product ), 'name' ) );
-			}
-			elseif ( 'pa_pwb-brand' === $manufacturer_attribute ) {
-				// Support for Perfect Brands for WooCommerce
-				$manufacturer_name = implode( ', ', wp_list_pluck( $this->get_perfect_brands_terms( $product ), 'name' ) );
-			}
-			else {
-				// Get regular attribute value
-				$manufacturer_name = $product->get_attribute( $manufacturer_attribute );
-			}
+				if ( 'pa_woo__product_brand' === $manufacturer_attribute ) {
+					// Support for native WooCommerce Brands taxonomy
+					$manufacturer_name = implode( ', ', wp_list_pluck( $this->get_wc_brands_native( $product ), 'name' ) );
+				}
+				elseif ( 'pa_pwb-brand' === $manufacturer_attribute ) {
+					// Support for Perfect Brands for WooCommerce
+					$manufacturer_name = implode( ', ', wp_list_pluck( $this->get_perfect_brands_terms( $product ), 'name' ) );
+				}
+				else {
+					// Get regular attribute value
+					$manufacturer_name = $product->get_attribute( $manufacturer_attribute );
+				}
 
-			// keep only the value from the first non-empty attribute/custom taxonomy
-			if ( ! empty( $manufacturer_name ) ) {
-				$manufacturer = $manufacturer_name;
-				break;
+				// keep only the value from the first non-empty attribute/custom taxonomy
+				if ( ! empty( $manufacturer_name ) ) {
+					$manufacturer = $manufacturer_name;
+					break;
+				}
 			}
 		}
 
@@ -580,51 +581,52 @@ class Dicha_Skroutz_Feed_Data_Helper {
 
 		$color = '';
 
-		if ( empty( $this->options['color'] ) || ! is_array( $this->options['color'] ) ) return $color;
+		if ( ! empty( $this->options['color'] ) && is_array( $this->options['color'] ) ) {
 
-		$product_type = $product->get_type();
+			$product_type = $product->get_type();
 
-		if ( 'simple' === $product_type || 'variable' === $product_type ) {
+			if ( 'simple' === $product_type || 'variable' === $product_type ) {
 
-			foreach ( $this->options['color'] as $color_attribute ) {
+				foreach ( $this->options['color'] as $color_attribute ) {
 
-				$color_names = $product->get_attribute( $color_attribute );
+					$color_names = $product->get_attribute( $color_attribute );
 
-				if ( ! empty( $color_names ) ) {
-					// if multiple color options exist, then keep only first for skroutz
-					$color = implode( '/', array_map( 'trim', explode( ',', $color_names, 2 ) ) );
-					break;
+					if ( ! empty( $color_names ) ) {
+						// if multiple color options exist, then keep only first for skroutz
+						$color = implode( '/', array_map( 'trim', explode( ',', $color_names, 2 ) ) );
+						break;
+					}
 				}
 			}
-		}
-		elseif ( 'variation' === $product_type ) {
+			elseif ( 'variation' === $product_type ) {
 
-			$variation_colors = [];
+				$variation_colors = [];
 
-			// if a variation has multiple size attributes, keep all of them and separate with "/"
-			foreach ( $this->options['color'] as $color_attribute ) {
+				// if a variation has multiple size attributes, keep all of them and separate with "/"
+				foreach ( $this->options['color'] as $color_attribute ) {
 
-				$color_value = $product->get_attribute( $color_attribute );
+					$color_value = $product->get_attribute( $color_attribute );
 
-				/**
-				 * Mod for greek (non-english) slugs.
-				 *
-				 * WC_Product_Variation::get_attribute() works differently from WC_Product::get_attribute()
-				 * because it returns the option slug for attributes with greek slug, instead of name.
-				 * So we need to fetch the term name for display ourselves.
-				 */
-				if ( ! taxonomy_exists( sanitize_title( $color_attribute ) ) && taxonomy_exists( $color_attribute ) ) {
+					/**
+					 * Mod for greek (non-english) slugs.
+					 *
+					 * WC_Product_Variation::get_attribute() works differently from WC_Product::get_attribute()
+					 * because it returns the option slug for attributes with greek slug, instead of name.
+					 * So we need to fetch the term name for display ourselves.
+					 */
+					if ( ! taxonomy_exists( sanitize_title( $color_attribute ) ) && taxonomy_exists( $color_attribute ) ) {
 
-					$term        = get_term_by( 'slug', $color_value, $color_attribute );
-					$color_value = ! is_wp_error( $term ) && $term ? $term->name : $color_value;
+						$term        = get_term_by( 'slug', $color_value, $color_attribute );
+						$color_value = ! is_wp_error( $term ) && $term ? $term->name : $color_value;
+					}
+
+					if ( ! empty( $color_value ) ) {
+						$variation_colors[] = $color_value;
+					}
 				}
 
-				if ( ! empty( $color_value ) ) {
-					$variation_colors[] = $color_value;
-				}
+				$color = implode( '/', $variation_colors );
 			}
-
-			$color = implode( '/', $variation_colors );
 		}
 
 		return apply_filters( 'dicha_skroutz_feed_custom_color', $color, $product, $this->options['color'], $this->feed_type );
@@ -642,57 +644,58 @@ class Dicha_Skroutz_Feed_Data_Helper {
 
 		$size = '';
 
-		if ( empty( $this->options['size'] ) || ! is_array( $this->options['size'] ) ) return $size;
+		if ( ! empty( $this->options['size'] ) && is_array( $this->options['size'] ) ) {
 
-		$product_type = $product->get_type();
+			$product_type = $product->get_type();
 
-		if ( 'simple' === $product_type || 'variable' === $product_type ) {
+			if ( 'simple' === $product_type || 'variable' === $product_type ) {
 
-			foreach ( $this->options['size'] as $size_attribute ) {
+				foreach ( $this->options['size'] as $size_attribute ) {
 
-				$size_values = $product->get_attribute( $size_attribute );
+					$size_values = $product->get_attribute( $size_attribute );
 
-				if ( ! empty( $size_values ) ) {
-					// if multiple size options exist in simple products, then keep only first for skroutz
-					$size = explode( ',', $size_values, 2 )[0];
-					break;
-				}
-			}
-
-			// only for simple or variable products (not variations), replace empty size with "One Size"
-			// If variations have size info, this will be replaced anyway. If they haven't, they will inherit this one, which is ideal.
-			if ( empty( $size ) && wc_string_to_bool( get_option( 'dicha_skroutz_feed_size_default_one_size' ) ) ) {
-				$size = 'One Size';
-			}
-		}
-		elseif ( 'variation' === $product_type ) {
-
-			$variation_sizes = [];
-
-			// if a variation has multiple size attributes, keep all of them and separate with "/"
-			foreach ( $this->options['size'] as $size_attribute ) {
-
-				$size_value = $product->get_attribute( $size_attribute );
-
-				/**
-				 * Mod for greek (non-english) slugs.
-				 *
-				 * WC_Product_Variation::get_attribute() works differently from WC_Product::get_attribute()
-				 * because it returns the option slug for attributes with greek slug, instead of name.
-				 * So we need to fetch the term name for display ourselves.
-				 */
-				if ( ! taxonomy_exists( sanitize_title( $size_attribute ) ) && taxonomy_exists( $size_attribute ) ) {
-
-					$term       = get_term_by( 'slug', $size_value, $size_attribute );
-					$size_value = ! is_wp_error( $term ) && $term ? $term->name : $size_value;
+					if ( ! empty( $size_values ) ) {
+						// if multiple size options exist in simple products, then keep only first for skroutz
+						$size = explode( ',', $size_values, 2 )[0];
+						break;
+					}
 				}
 
-				if ( ! empty( $size_value ) ) {
-					$variation_sizes[] = $size_value;
+				// only for simple or variable products (not variations), replace empty size with "One Size"
+				// If variations have size info, this will be replaced anyway. If they haven't, they will inherit this one, which is ideal.
+				if ( empty( $size ) && wc_string_to_bool( get_option( 'dicha_skroutz_feed_size_default_one_size' ) ) ) {
+					$size = 'One Size';
 				}
 			}
+			elseif ( 'variation' === $product_type ) {
 
-			$size = implode( '/', $variation_sizes );
+				$variation_sizes = [];
+
+				// if a variation has multiple size attributes, keep all of them and separate with "/"
+				foreach ( $this->options['size'] as $size_attribute ) {
+
+					$size_value = $product->get_attribute( $size_attribute );
+
+					/**
+					 * Mod for greek (non-english) slugs.
+					 *
+					 * WC_Product_Variation::get_attribute() works differently from WC_Product::get_attribute()
+					 * because it returns the option slug for attributes with greek slug, instead of name.
+					 * So we need to fetch the term name for display ourselves.
+					 */
+					if ( ! taxonomy_exists( sanitize_title( $size_attribute ) ) && taxonomy_exists( $size_attribute ) ) {
+
+						$term       = get_term_by( 'slug', $size_value, $size_attribute );
+						$size_value = ! is_wp_error( $term ) && $term ? $term->name : $size_value;
+					}
+
+					if ( ! empty( $size_value ) ) {
+						$variation_sizes[] = $size_value;
+					}
+				}
+
+				$size = implode( '/', $variation_sizes );
+			}
 		}
 
 		return apply_filters( 'dicha_skroutz_feed_custom_size', $size, $product, $this->options['size'], $this->feed_type );
