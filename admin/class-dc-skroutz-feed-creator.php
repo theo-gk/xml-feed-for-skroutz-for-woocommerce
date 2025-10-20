@@ -580,7 +580,8 @@ class Dicha_Skroutz_Feed_Creator {
 		}
 
 		$group_color         = $group_image = $group_link = $group_sku = '';
-		$variable_group_data = $group_sizes = $group_additional_images = $variation_nodes = [];
+		$variable_group_data = $group_sizes = $variation_nodes = [];
+		$group_additional_images = null;
 
 		// Get parent stock if manage stock happens on parent level
 		// if this happens, stock status field (instock/outofstock/backorder) disappears from variations tabs
@@ -705,15 +706,16 @@ class Dicha_Skroutz_Feed_Creator {
 			}
 
 			/*
-			 * If variations have extra gallery images in some custom field, you can use this filter
-			 * to add these images in this array.
+			 * If variations have extra gallery images in some custom field, you can use this filter to add these images in this array.
 			 * If custom images are found, they are shown in the <additional_imageurl> nodes.
-			 * If no custom images found, then the parent's (variable) gallery images will be shown in this field.
+			 *
+			 * If all `$group_additional_images` are null, then the parent's additional images are used.
+			 * Return an empty array if you don't want to add any additional images to your group.
 			 */
-			$variation_additional_images = apply_filters( 'dicha_skroutz_feed_custom_variation_additional_images', [], $variation, $parent_product, $this->feed_type );
+			$variation_additional_images = apply_filters( 'dicha_skroutz_feed_custom_variation_additional_images', null, $variation, $parent_product, $has_size_variations, $this->feed_type );
 
-			if ( ! empty( $variation_additional_images ) ) {
-				$group_additional_images = array_merge( $group_additional_images, $variation_additional_images );
+			if ( is_array( $variation_additional_images ) ) {
+				$group_additional_images = array_merge( ( $group_additional_images ?? [] ), $variation_additional_images );
 			}
 
 			$variation_id = $variation->get_id();
@@ -777,12 +779,17 @@ class Dicha_Skroutz_Feed_Creator {
 		$variable_group_data['quantity'] = $group_quantity;
 		$variable_group_data['image']    = $group_image;
 
-		// if not additional images found for variations, then use parents gallery images
-		$group_additional_images = array_unique( array_filter( $group_additional_images ) );
-
-		if ( empty( $group_additional_images ) ) {
+		// if additional images NOT SET for group (all null), then use parents gallery images (if group has empty array intentionally, keep it empty)
+		if ( ! is_array( $group_additional_images ) ) {
 			$group_additional_images = $this->data_helper->skroutz_get_additional_images( $parent_product );
 		}
+		else {
+			$group_additional_images = array_unique( $group_additional_images );
+		}
+
+		$group_additional_images = array_filter( $group_additional_images, function ( $image ) use ( $group_image ) {
+			return ! empty( $image ) && $image !== $group_image;
+		} );
 
 		if ( ! empty( $group_additional_images ) ) {
 			$variable_group_data['additional_imageurl'] = $group_additional_images;
