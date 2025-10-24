@@ -592,8 +592,7 @@ class Dicha_Skroutz_Feed_Data_Helper {
 					$color_names = $product->get_attribute( $color_attribute );
 
 					if ( ! empty( $color_names ) ) {
-						// if multiple color options exist, then keep only first for skroutz
-						$color = implode( '/', array_map( 'trim', explode( ',', $color_names, 2 ) ) );
+						$color = implode( '/', array_map( 'trim', explode( ',', $color_names ) ) );
 						break;
 					}
 				}
